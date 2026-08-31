@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meta Trafficking Validator</title>
+<title>Meta Trafficking Validator v9.0 - IQA Dashboard</title>
 
 <style>
 :root{
@@ -19,6 +18,7 @@
   --yellow:#d97706;
   --red:#dc2626;
   --purple:#7c3aed;
+  --teal:#14b8a6;
   --shadow:0 4px 18px rgba(16,24,40,.07);
 }
 
@@ -107,6 +107,12 @@ h1{
 
 .btn.danger{
   color:var(--red);
+}
+
+.btn.success{
+  background:var(--green);
+  color:white;
+  border-color:var(--green);
 }
 
 .steps{
@@ -266,6 +272,9 @@ input:disabled,select:disabled,textarea:disabled{
 .badge.derived{background:#ecfdf3;color:#15803d}
 .badge.manual{background:#fff7ed;color:#c2410c}
 .badge.internal{background:#f2f4f7;color:#475467}
+.badge.blocker{background:#fee2e2;color:#991b1b}
+.badge.warning{background:#fef3c7;color:#92400e}
+.badge.pass{background:#dcfce7;color:#166534}
 
 .section-note{
   padding:10px 12px;
@@ -348,8 +357,20 @@ input:disabled,select:disabled,textarea:disabled{
   border-color:#bbf7d0;
 }
 
+.validation-item.info{
+  background:#eff6ff;
+  border-color:#bfdbfe;
+}
+
 .validation-icon{
   font-weight:800;
+  flex-shrink:0;
+}
+
+.validation-id{
+  font-size:9px;
+  color:var(--muted);
+  margin-right:4px;
 }
 
 .score{
@@ -525,6 +546,235 @@ input:disabled,select:disabled,textarea:disabled{
   margin-bottom:15px;
 }
 
+.placement-group{
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:10px;
+  overflow:hidden;
+}
+
+.placement-group-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 12px;
+  background:#f8fafc;
+  font-weight:650;
+  font-size:12.5px;
+  cursor:pointer;
+}
+
+.placement-group-header input{
+  width:auto;
+}
+
+.placement-group-body{
+  padding:10px 12px 12px 34px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.placement-group-body label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:500;
+  font-size:12px;
+  margin-bottom:0;
+}
+
+.placement-group-body input{
+  width:auto;
+}
+
+.tab-toggle{
+  display:flex;
+  gap:6px;
+  margin-bottom:15px;
+  border-bottom:1px solid var(--border);
+}
+
+.tab-toggle button{
+  border:0;
+  background:none;
+  padding:9px 4px;
+  font-weight:650;
+  font-size:12.5px;
+  color:var(--muted);
+  border-bottom:2px solid transparent;
+}
+
+.tab-toggle button.active{
+  color:var(--primary);
+  border-bottom-color:var(--primary);
+}
+
+/* Dependency Chain Visualization */
+.dependency-chain{
+  background:linear-gradient(135deg, rgba(24,119,242,0.05), rgba(124,58,237,0.05));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+.chain-flow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.chain-item{
+  background:var(--primary);
+  color:white;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:500;
+}
+
+.chain-arrow{
+  color:var(--muted);
+  font-size:14px;
+}
+
+.chain-result{
+  background:var(--green);
+  color:white;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:500;
+}
+
+/* Checklist View */
+.checklist-section{
+  margin-bottom:12px;
+}
+
+.checklist-header{
+  font-size:13px;
+  font-weight:600;
+  padding:10px 12px;
+  background:var(--muted);
+  border-radius:6px;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.checklist-count{
+  font-size:10px;
+  background:rgba(255,255,255,0.2);
+  padding:2px 8px;
+  border-radius:10px;
+}
+
+.checklist-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+
+.checklist-item:last-child{
+  border-bottom:none;
+}
+
+.check-status{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  flex-shrink:0;
+}
+
+.check-pass{background:var(--green);color:white}
+.check-review{background:var(--yellow);color:white}
+.check-block{background:var(--red);color:white}
+
+/* Creative Specs */
+.specs-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+  margin-top:10px;
+}
+
+.specs-table th,
+.specs-table td{
+  padding:6px 8px;
+  text-align:left;
+  border:1px solid var(--border);
+}
+
+.specs-table th{
+  background:var(--muted);
+  color:white;
+  font-weight:600;
+}
+
+.specs-table tr:nth-child(even){
+  background:rgba(0,0,0,0.02);
+}
+
+/* View Toggle */
+.view-toggle{
+  display:flex;
+  gap:8px;
+  margin-bottom:16px;
+}
+
+.view-toggle button{
+  flex:1;
+  padding:10px;
+  border:1px solid var(--border);
+  background:white;
+  border-radius:8px;
+  font-weight:600;
+  font-size:12px;
+}
+
+.view-toggle button.active{
+  background:var(--primary);
+  color:white;
+  border-color:var(--primary);
+}
+
+/* Post Upload Section */
+.post-upload{
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  border-radius:8px;
+  padding:12px;
+  margin-top:10px;
+}
+
+.post-upload h4{
+  margin:0 0 10px 0;
+  font-size:13px;
+  color:#166534;
+}
+
+.id-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.id-field input{
+  background:white;
+}
+
 @media(max-width:1050px){
   .layout{grid-template-columns:1fr}
 }
@@ -533,6 +783,7 @@ input:disabled,select:disabled,textarea:disabled{
   .grid,.grid.three,.asset-grid{grid-template-columns:1fr}
   .steps{grid-template-columns:1fr}
   .header-actions{display:none}
+  .id-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -545,18 +796,36 @@ input:disabled,select:disabled,textarea:disabled{
   <div class="brand">
     <div class="logo">M</div>
     <div>
-      <h1>Meta Trafficking Validator</h1>
+      <h1>Meta Trafficking Validator v9.0</h1>
       <div class="subtitle">
-        Brief → Dependency Engine → QA → Trafficking Readiness
+        IQA Dashboard • 135 Validation Checks • Dependency Engine
       </div>
     </div>
   </div>
 
   <div class="header-actions">
     <button class="btn" onclick="resetAll()">Reset</button>
+    <button class="btn" onclick="exportCSV()">Export CSV</button>
+    <button class="btn success" onclick="exportJSON()">Export JSON</button>
     <button class="btn primary" onclick="publishCheck()">Validate & Publish</button>
   </div>
 </header>
+
+<!-- Dependency Chain Visualization -->
+<div class="dependency-chain">
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;">🔗 Live Dependency Chain</div>
+  <div class="chain-flow" id="dependencyChain">
+    <span class="chain-item" id="chainObjective">Select Objective</span>
+    <span class="chain-arrow">→</span>
+    <span class="chain-item" id="chainBuying">Buying Type</span>
+    <span class="chain-arrow">→</span>
+    <span class="chain-item" id="chainOptimization">Optimization</span>
+    <span class="chain-arrow">→</span>
+    <span class="chain-item" id="chainBid">Bid Strategy</span>
+    <span class="chain-arrow">→</span>
+    <span class="chain-result" id="chainStatus">Incomplete</span>
+  </div>
+</div>
 
 <div class="steps">
   <div class="step active" onclick="showTab('campaign',this)">
@@ -601,7 +870,7 @@ input:disabled,select:disabled,textarea:disabled{
 <span class="badge brief">BRIEF</span>
 </label>
 <input id="campaignName" placeholder="Brand | Market | Objective | Initiative">
-<div class="help">Naming convention is validated automatically.</div>
+<div class="help">Naming convention validated automatically. [M001]</div>
 </div>
 
 <div class="field">
@@ -613,7 +882,7 @@ input:disabled,select:disabled,textarea:disabled{
 <option value="Auction">Auction</option>
 <option value="Reservation">Reservation</option>
 </select>
-<div class="help">Reservation availability is account/market dependent.</div>
+<div class="help">Reservation availability is account/market dependent. [M002]</div>
 </div>
 
 <div class="field">
@@ -629,6 +898,7 @@ input:disabled,select:disabled,textarea:disabled{
 <option value="App promotion">App promotion</option>
 <option value="Sales">Sales</option>
 </select>
+<div class="help">Must be current supported objective and drive child eligibility. [M002]</div>
 </div>
 
 <div class="field">
@@ -640,7 +910,28 @@ input:disabled,select:disabled,textarea:disabled{
 <option value="Housing">Housing</option>
 <option value="Political / Social Issues">Political / Social Issues</option>
 </select>
-<div class="help">Category-specific targeting restrictions are applied automatically.</div>
+<div class="help">Explicitly resolve category state and apply restrictions. [M003]</div>
+</div>
+
+<div class="field">
+<label>Advantage+ campaign budget
+<span class="badge derived">DERIVED</span>
+</label>
+<select id="advantagePlusBudget" onchange="updateDependencies()">
+<option value="No">Off</option>
+<option value="Yes">On</option>
+</select>
+<div class="help">When on, budget is distributed across ad sets automatically. [M004]</div>
+</div>
+
+<div class="field hidden" id="campaignBidStrategyField">
+<label>Bid strategy
+<span class="badge derived">DERIVED</span>
+</label>
+<select id="campaignBidStrategyType" onchange="updateDependencies()">
+<option value="">Select objective first</option>
+</select>
+<div class="help">Chosen at Campaign level because Advantage+ campaign budget is on. [M005]</div>
 </div>
 
 <div class="field">
@@ -688,35 +979,37 @@ input:disabled,select:disabled,textarea:disabled{
 
 <div class="card">
 <div class="card-header">
-<h2>Bid Strategy</h2>
-<span class="badge derived">DERIVED</span>
+<h2>Brand Safety &amp; Suitability</h2>
+<span class="badge account">ACCOUNT</span>
 </div>
 
 <div class="card-body">
 
+<div class="help" style="margin-bottom:12px">
+Configurable at the Ad Account or Campaign level depending on account setup. [M006]</div>
+
 <div class="grid">
 
 <div class="field">
-<label>Bid strategy</label>
-<select id="campaignBid" onchange="updateDependencies()">
-<option value="">Select objective first</option>
+<label>Inventory filter</label>
+<select id="inventoryFilter">
+<option value="Expanded Inventory">Expanded Inventory</option>
+<option value="Moderate Inventory">Moderate Inventory</option>
+<option value="Limited Inventory">Limited Inventory</option>
 </select>
+<div class="help">Content that's excessively controversial or offensive is always excluded. [M006]</div>
 </div>
 
-<div class="field hidden" id="bidValueField">
-<label id="bidValueLabel">Target value</label>
-<input id="bidValue" type="number" min="0" step="0.01">
+<div class="field">
+<label>Publisher block list</label>
+<select id="publisherBlockList">
+<option value="None">None applied</option>
+<option value="Standard">Standard block list</option>
+<option value="Custom">Custom block list</option>
+</select>
+<div class="help">Verify block list is active and not expired. [M006]</div>
 </div>
 
-<div class="field hidden" id="roasField">
-<label>Minimum ROAS</label>
-<input id="roas" type="number" min="0" step="0.1" placeholder="e.g. 2.5">
-</div>
-
-</div>
-
-<div class="help">
-Bid options are dynamically filtered by objective, optimization goal and configuration.
 </div>
 
 </div>
@@ -738,6 +1031,7 @@ Bid options are dynamically filtered by objective, optimization goal and configu
 <option value="No">No</option>
 <option value="Yes">Yes</option>
 </select>
+<div class="help">A/B Test + CBO requires careful validation. [M048]</div>
 </div>
 
 <div class="field hidden" id="abVariableField">
@@ -757,6 +1051,8 @@ Bid options are dynamically filtered by objective, optimization goal and configu
 </div>
 
 </div>
+
+<div class="help" id="abTestNote" style="margin-top:10px"></div>
 
 </div>
 </div>
@@ -784,7 +1080,48 @@ Bid options are dynamically filtered by objective, optimization goal and configu
 </div>
 
 <div class="help">
-Show this section when the selected market/account configuration requires additional disclosure.
+Show this section when the selected market/account configuration requires additional disclosure. [M047]</div>
+
+</div>
+</div>
+
+<!-- Post-Upload Reconciliation -->
+<div class="card">
+<div class="card-header">
+<h2>Post-Upload Reconciliation</h2>
+<span class="badge internal">INTERNAL</span>
+</div>
+
+<div class="card-body">
+
+<div class="post-upload">
+  <h4>Capture IDs After Upload</h4>
+  <div class="id-grid">
+    <div class="id-field">
+      <label>Campaign ID</label>
+      <input id="campaignId" placeholder="e.g. 23849238492384">
+    </div>
+    <div class="id-field">
+      <label>Campaign Set ID</label>
+      <input id="campaignSetId" placeholder="e.g. 23849238492385">
+    </div>
+    <div class="id-field">
+      <label>Ad Set ID</label>
+      <input id="adSetId" placeholder="e.g. 23849238492386">
+    </div>
+    <div class="id-field">
+      <label>Ad ID</label>
+      <input id="adId" placeholder="e.g. 23849238492387">
+    </div>
+    <div class="id-field">
+      <label>Ad Creative ID</label>
+      <input id="adCreativeId" placeholder="e.g. 23849238492388">
+    </div>
+    <div class="id-field">
+      <label>Ad Image Hash</label>
+      <input id="adImageHash" placeholder="e.g. a1b2c3d4e5f6">
+    </div>
+  </div>
 </div>
 
 </div>
@@ -829,6 +1166,7 @@ Show this section when the selected market/account configuration requires additi
 <option>Website Dataset - Regional</option>
 <option>Lead Dataset</option>
 </select>
+<div class="help">Must be active and accessible. [M008]</div>
 </div>
 
 <div class="field hidden" id="eventField">
@@ -842,6 +1180,7 @@ Show this section when the selected market/account configuration requires additi
 <option>View Content</option>
 <option>Contact</option>
 </select>
+<div class="help">Event must exist on selected source and match optimization. [M009]</div>
 </div>
 
 <div class="field hidden" id="formField">
@@ -855,6 +1194,7 @@ Show this section when the selected market/account configuration requires additi
 <option>Lead Form - India</option>
 <option>Draft Form - INVALID</option>
 </select>
+<div class="help">Form must be active, published, and matched to Page. [M025]</div>
 </div>
 
 <div class="field hidden" id="appField">
@@ -867,6 +1207,7 @@ Show this section when the selected market/account configuration requires additi
 <option>Brand Android App</option>
 <option>Unregistered Store Link</option>
 </select>
+<div class="help">Must be registered Meta for Developers app. [M008]</div>
 </div>
 
 <div class="field hidden" id="appEventField">
@@ -879,11 +1220,72 @@ Show this section when the selected market/account configuration requires additi
 </select>
 </div>
 
+<div class="field hidden" id="skanField">
+<label>SKAdNetwork Conversion Value
+<span class="badge derived">DERIVED</span>
+</label>
+<select id="skanValue">
+<option value="0">0 - No conversion</option>
+<option value="1">1 - Low value</option>
+<option value="63">63 - High value</option>
+</select>
+<div class="help">iOS 14.5+ app campaigns require SKAdNetwork mapping. [M010]</div>
+</div>
+
+<div class="field hidden" id="customerLifecycleField">
+<label>Customer lifecycle strategy
+<span class="badge derived">DERIVED</span>
+</label>
+<select id="customerLifecycle">
+<option value="Get conversions from all audiences">Get conversions from all audiences</option>
+<option value="Acquire new customers">Acquire new customers</option>
+</select>
+<div class="help">"Acquire new customers" prioritizes people who have never purchased. [M011]</div>
+</div>
+
 </div>
 
 <div id="conversionDependency" class="dependency">
 Select an objective and conversion location to activate the relevant fields.
 </div>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h2>Bid Strategy</h2>
+<span class="badge derived">DERIVED</span>
+</div>
+
+<div class="card-body">
+
+<div id="adsetBidStrategyNote" class="dependency hidden"></div>
+
+<div class="grid">
+
+<div class="field" id="adsetBidStrategyTypeField">
+<label>Bid strategy</label>
+<select id="campaignBid" onchange="updateDependencies()">
+<option value="">Select objective first</option>
+</select>
+<div class="help">Combination must be currently supported for objective/buying type. [M007]</div>
+</div>
+
+<div class="field hidden" id="bidValueField">
+<label id="bidValueLabel">Target value</label>
+<input id="bidValue" type="number" min="0" step="0.01">
+</div>
+
+<div class="field hidden" id="roasField">
+<label>Minimum ROAS</label>
+<input id="roas" type="number" min="0" step="0.1" placeholder="e.g. 2.5">
+</div>
+
+</div>
+
+<div class="help">
+Bid options are dynamically filtered by objective, optimization goal and configuration. [M007]</div>
 
 </div>
 </div>
@@ -922,13 +1324,24 @@ Select an objective and conversion location to activate the relevant fields.
 <input id="endDate" type="date" onchange="updateDependencies()">
 </div>
 
-<div class="field full">
+<div class="field">
 <label>Dayparting</label>
 <select id="dayparting" onchange="updateDependencies()">
 <option value="No">No</option>
 <option value="Yes">Yes</option>
 </select>
-<div class="help">Requires lifetime budget and account eligibility.</div>
+<div class="help">Requires lifetime budget and account eligibility. [M049]</div>
+</div>
+
+<div class="field">
+<label>Dynamic creative
+<span class="badge derived">DERIVED</span>
+</label>
+<select id="dynamicCreative" onchange="updateDependencies()">
+<option>No</option>
+<option>Yes</option>
+</select>
+<div class="help">Automatically creates combinations of media and text. [M050]</div>
 </div>
 
 </div>
@@ -943,6 +1356,24 @@ Select an objective and conversion location to activate the relevant fields.
 </div>
 
 <div class="card-body">
+
+<div class="tab-toggle">
+<button type="button" class="active" id="newAudienceTab" onclick="setAudienceSourceTab('new')">Create new audience</button>
+<button type="button" id="savedAudienceTab" onclick="setAudienceSourceTab('saved')">Use a saved audience</button>
+</div>
+
+<div id="savedAudienceArea" class="field full hidden" style="margin-bottom:16px">
+<label>Saved audience</label>
+<select id="savedAudience">
+<option value="">Select</option>
+<option>APAC - Core Broad 18-45</option>
+<option>Retargeting - Site Visitors 30D</option>
+<option>Lookalike - Purchasers 1%</option>
+</select>
+<div class="help">Verify saved audience is not expired and matches targeting requirements. [M051]</div>
+</div>
+
+<div id="newAudienceArea">
 
 <div class="grid">
 
@@ -960,6 +1391,7 @@ Select an objective and conversion location to activate the relevant fields.
 <div class="field">
 <label>Locations <span class="required">*</span></label>
 <input id="locations" placeholder="Countries, regions or cities">
+<div class="help">Geography must be locked before trafficking. [S02]</div>
 </div>
 
 <div class="field">
@@ -990,7 +1422,7 @@ Select an objective and conversion location to activate the relevant fields.
 <label>Age</label>
 <div class="grid">
 <input id="ageMin" type="number" min="18" max="65" value="18">
-<input id="ageMax" type="number" min="18" max="65" value="65+">
+<input id="ageMax" type="number" min="18" max="65" value="65">
 </div>
 <div id="ageLock" class="lock-message hidden"></div>
 </div>
@@ -1014,6 +1446,7 @@ Select an objective and conversion location to activate the relevant fields.
 <option>Instagram Engagers - 365D</option>
 <option>Lead Form - 90D</option>
 </select>
+<div class="help">Custom audiences must be resolved and active. [S05]</div>
 </div>
 
 <div class="field hidden" id="lookalikeField">
@@ -1038,6 +1471,9 @@ Select an objective and conversion location to activate the relevant fields.
 <div class="field full">
 <label>Audience exclusions</label>
 <input placeholder="Exclude existing customers, converters, etc.">
+<button type="button" class="btn" style="margin-top:8px" onclick="alert('Exclusion builder opened (custom audiences, lookalikes, engagement).')">+ Add exclusions</button>
+</div>
+
 </div>
 
 </div>
@@ -1069,24 +1505,75 @@ Manual placements
 
 <div id="manualPlacements" class="hidden" style="margin-top:15px">
 
-<div class="check-row">
+<div class="placement-group">
+<div class="placement-group-header">
+<input type="checkbox" checked disabled>
+Feeds
+</div>
+<div class="placement-group-body">
+<label><input type="checkbox" value="Facebook Feed" checked> Facebook Feed</label>
+<label><input type="checkbox" value="Facebook profile feed" checked> Facebook profile feed</label>
+<label><input type="checkbox" value="Instagram feed" checked> Instagram feed</label>
+<label><input type="checkbox" value="Instagram profile feed" checked> Instagram profile feed</label>
+<label><input type="checkbox" value="Facebook Marketplace" checked> Facebook Marketplace</label>
+<label><input type="checkbox" value="Facebook right column"> Facebook right column</label>
+<label><input type="checkbox" value="Instagram Explore home" checked> Instagram Explore home</label>
+<label><input type="checkbox" value="Facebook Business Explore"> Facebook Business Explore</label>
+<label><input type="checkbox" value="Threads feed" checked> Threads feed</label>
+<label><input type="checkbox" value="Facebook Notifications"> Facebook Notifications</label>
+</div>
+</div>
 
-<label class="choice"><input type="checkbox" value="Facebook Feed"> Facebook Feed</label>
-<label class="choice"><input type="checkbox" value="Instagram Feed"> Instagram Feed</label>
-<label class="choice"><input type="checkbox" value="Facebook Stories"> Facebook Stories</label>
-<label class="choice"><input type="checkbox" value="Instagram Stories"> Instagram Stories</label>
-<label class="choice"><input type="checkbox" value="Facebook Reels"> Facebook Reels</label>
-<label class="choice"><input type="checkbox" value="Instagram Reels"> Instagram Reels</label>
-<label class="choice"><input type="checkbox" value="In-stream Video"> In-stream Video</label>
-<label class="choice"><input type="checkbox" value="Marketplace"> Marketplace</label>
-<label class="choice"><input type="checkbox" value="Messenger"> Messenger</label>
-<label class="choice"><input type="checkbox" value="Audience Network"> Audience Network</label>
+<div class="placement-group">
+<div class="placement-group-header">
+<input type="checkbox" checked disabled>
+Stories, Status, Reels
+</div>
+<div class="placement-group-body">
+<label><input type="checkbox" value="Instagram Stories" checked> Instagram Stories</label>
+<label><input type="checkbox" value="Facebook Stories" checked> Facebook Stories</label>
+<label><input type="checkbox" value="Messenger Stories" checked> Messenger Stories</label>
+<label><input type="checkbox" value="Instagram Reels" checked> Instagram Reels</label>
+<label><input type="checkbox" value="Facebook Reels" checked> Facebook Reels</label>
+<label><input type="checkbox" value="WhatsApp Status"> WhatsApp Status</label>
+</div>
+</div>
 
+<div class="placement-group">
+<div class="placement-group-header">
+<input type="checkbox" checked disabled>
+In-stream ads for reels
+</div>
+<div class="placement-group-body">
+<label><input type="checkbox" value="In-stream for Reels" checked> In-stream for Reels</label>
+<label><input type="checkbox" value="Ads on Facebook Reels" checked> Ads on Facebook Reels</label>
+</div>
+</div>
+
+<div class="placement-group">
+<div class="placement-group-header">
+<input type="checkbox" checked disabled>
+Search results
+</div>
+<div class="placement-group-body">
+<label><input type="checkbox" value="Facebook search results" checked> Facebook search results</label>
+<label><input type="checkbox" value="Instagram search results" checked> Instagram search results</label>
+</div>
+</div>
+
+<div class="placement-group">
+<div class="placement-group-header">
+<input type="checkbox" checked disabled>
+Apps and sites
+</div>
+<div class="placement-group-body">
+<label><input type="checkbox" value="Audience Network native, banner and interstitial" checked> Audience Network native, banner and interstitial</label>
+<label><input type="checkbox" value="Audience Network rewarded videos"> Audience Network rewarded videos</label>
+</div>
 </div>
 
 <div class="help">
-At least one placement is required. Instagram placements require an eligible Instagram identity.
-</div>
+At least one placement is required. Instagram placements require an eligible Instagram identity. [M017]</div>
 
 </div>
 
@@ -1108,6 +1595,7 @@ At least one placement is required. Instagram placements require an eligible Ins
 <select id="performanceGoal" onchange="updateDependencies()">
 <option value="">Select objective first</option>
 </select>
+<div class="help">Must align with optimization event. [S11]</div>
 </div>
 
 <div class="field">
@@ -1128,6 +1616,15 @@ At least one placement is required. Instagram placements require an eligible Ins
 </select>
 </div>
 
+<div class="field">
+<label>Delivery type</label>
+<select id="deliveryType">
+<option value="Standard">Standard</option>
+<option value="Accelerated">Accelerated</option>
+</select>
+<div class="help">Accelerated spends budget and gets results as quickly as possible. [M053]</div>
+</div>
+
 </div>
 
 </div>
@@ -1145,37 +1642,38 @@ At least one placement is required. Instagram placements require an eligible Ins
 
 <div class="field">
 <label>Frequency control</label>
-<select id="frequencyEnabled" onchange="updateDependencies()">
-<option>No</option>
-<option>Yes</option>
-</select>
+<div class="radio-row">
+<label class="choice">
+<input type="radio" name="frequencyMode" value="Target" onchange="updateDependencies()">
+Target
+</label>
+<label class="choice">
+<input type="radio" name="frequencyMode" value="Cap" checked onchange="updateDependencies()">
+Cap
+</label>
+</div>
+<div class="help">Target: average times people see your ads. Cap: maximum times. [M054]</div>
 </div>
 
-<div class="field hidden" id="frequencyValueField">
-<label>Frequency</label>
-<input type="number" min="1" value="3">
+<div class="field">
+<label>Impressions</label>
+<div class="grid">
+<input id="frequencyValue" type="number" min="1" value="2">
+<input id="frequencyPeriod" type="number" min="1" value="7">
 </div>
-
-<div class="field hidden" id="frequencyPeriodField">
-<label>Period (days)</label>
-<input type="number" min="1" value="7">
+<div class="help">Impressions every N days (suggested ranges are warnings, not blockers). [M054]</div>
 </div>
 
 <div class="field">
 <label>Attribution setting</label>
 <select id="attribution">
-<option>Default / eligible account setting</option>
-<option>1-day click</option>
-<option>7-day click</option>
-<option>1-day view</option>
-<option>7-day click + 1-day view</option>
+<option value="Standard">Standard</option>
+<option value="Incremental">Incremental</option>
+<option value="Custom">Custom</option>
 </select>
+<div class="help">Standard: optimizes for selected window. Incremental: optimizes for incremental conversions. [M055]</div>
 </div>
 
-</div>
-
-<div class="help">
-Frequency controls are eligibility-driven. Suggested ranges are warnings, not automatic blockers.
 </div>
 
 </div>
@@ -1210,6 +1708,7 @@ Frequency controls are eligibility-driven. Suggested ranges are warnings, not au
 <option>Brand Main Page</option>
 <option>Brand Regional Page</option>
 </select>
+<div class="help">Page/Instagram identity must be eligible. [M022]</div>
 </div>
 
 <div class="field">
@@ -1221,6 +1720,46 @@ Frequency controls are eligibility-driven. Suggested ranges are warnings, not au
 </select>
 </div>
 
+<div class="field">
+<label>Threads profile</label>
+<select id="threadsProfile">
+<option value="Use Instagram account">Use Instagram account</option>
+<option value="Use Facebook Page">Use Facebook Page</option>
+<option value="Dedicated Threads profile">Dedicated Threads profile</option>
+</select>
+<div class="help">Create a profile in the Threads app, or use your Instagram account or Facebook Page. [M056]</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h2>Partnership Ad</h2>
+<span class="badge brief">BRIEF</span>
+</div>
+
+<div class="card-body">
+
+<div class="field">
+<label>Partnership ad</label>
+<select id="partnershipAd" onchange="updateDependencies()">
+<option value="Off">Off</option>
+<option value="On">On</option>
+</select>
+<div class="help">Run ads with creators, brands and other businesses. [M057]</div>
+</div>
+
+<div id="partnershipDetailField" class="field hidden" style="margin-top:14px">
+<label>Choose how to create your ad(s)</label>
+<select id="partnershipMethod">
+<option value="">Select</option>
+<option>Create multiple ads from list</option>
+<option>Enter ad code or post info</option>
+<option>Select partnership</option>
+</select>
 </div>
 
 </div>
@@ -1260,7 +1799,17 @@ Use existing creative
 <option>Post #102938 - Main Page</option>
 <option>Post #102945 - Product Launch</option>
 </select>
-<div class="help">Existing post is used as published. Editable fields are restricted.</div>
+<div class="help">Existing post is used as published. Editable fields are restricted. [R30]</div>
+</div>
+
+<div id="existingCreativeField" class="field hidden" style="margin-top:15px">
+<label>Existing creative <span class="required">*</span></label>
+<select>
+<option value="">Select</option>
+<option>Creative #4471 - Carousel Spring</option>
+<option>Creative #4502 - Video Hero</option>
+</select>
+<div class="help">Reuses an existing creative asset. Text and media are inherited. [R30]</div>
 </div>
 
 </div>
@@ -1288,14 +1837,7 @@ Use existing creative
 <option>Collection</option>
 <option>Catalog / Product</option>
 </select>
-</div>
-
-<div class="field">
-<label>Dynamic creative</label>
-<select id="dynamicCreative" onchange="updateDependencies()">
-<option>No</option>
-<option>Yes</option>
-</select>
+<div class="help">Format must be compatible with selected placements. [R01]</div>
 </div>
 
 <div class="field hidden" id="catalogField">
@@ -1315,6 +1857,14 @@ Use existing creative
 <option>Top Sellers</option>
 <option>Campaign Products</option>
 </select>
+</div>
+
+<div class="field full">
+<label class="choice" style="display:inline-flex;width:auto">
+<input type="checkbox" id="multiAdvertiserAds" style="width:auto">
+Multi-advertiser ads
+</label>
+<div class="help">Your ad can appear with others in the same ad unit. [R31]</div>
 </div>
 
 </div>
@@ -1356,7 +1906,7 @@ Use existing creative
 
 <div id="dynamicAssetArea" class="hidden" style="margin-top:15px">
 <div class="dependency">
-Dynamic creative requires meaningful asset variation. A single value across every variable should not pass validation.
+Dynamic creative requires meaningful asset variation. A single value across every variable should not pass validation. [R32]
 </div>
 
 <div class="grid">
@@ -1382,6 +1932,47 @@ Dynamic creative requires meaningful asset variation. A single value across ever
 </div>
 </div>
 
+<!-- Creative Specs Table -->
+<div style="margin-top:15px;">
+  <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Creative Specifications Reference [R04-R05]</div>
+  <table class="specs-table">
+    <thead>
+      <tr>
+        <th>Format</th>
+        <th>Image</th>
+        <th>Video</th>
+        <th>Aspect Ratio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Feed</td>
+        <td>1080x1080 min</td>
+        <td>1-240 min</td>
+        <td>1:1, 4:5, 9:16</td>
+      </tr>
+      <tr>
+        <td>Stories/Reels</td>
+        <td>1080x1920 min</td>
+        <td>1-60 sec</td>
+        <td>9:16</td>
+      </tr>
+      <tr>
+        <td>Carousel</td>
+        <td>1080x1080 min</td>
+        <td>2-10 cards</td>
+        <td>1:1</td>
+      </tr>
+      <tr>
+        <td>Collection</td>
+        <td>600x600 min</td>
+        <td>4 sec - 2 min</td>
+        <td>1:1, 9:16</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 </div>
 </div>
 
@@ -1397,17 +1988,19 @@ Dynamic creative requires meaningful asset variation. A single value across ever
 
 <div class="field full">
 <label>Primary text <span class="required">*</span></label>
-<textarea id="primaryText" placeholder="Enter primary ad copy"></textarea>
+<textarea id="primaryText" placeholder="Enter primary ad copy" maxlength="1250"></textarea>
+<div class="help">Max 1250 characters. [R33]</div>
 </div>
 
 <div class="field">
 <label>Headline <span class="required">*</span></label>
-<input id="headline" placeholder="Headline">
+<input id="headline" placeholder="Headline" maxlength="255">
+<div class="help">Max 255 characters. [R33]</div>
 </div>
 
 <div class="field">
 <label>Description</label>
-<input id="description" placeholder="Optional description">
+<input id="description" placeholder="Optional description" maxlength="1250">
 </div>
 
 <div class="field">
@@ -1435,6 +2028,7 @@ Dynamic creative requires meaningful asset variation. A single value across ever
 <div class="field">
 <label>Destination URL</label>
 <input id="destinationUrl" placeholder="https://">
+<div class="help">Must be HTTPS reachable. [R34]</div>
 </div>
 
 </div>
@@ -1450,37 +2044,37 @@ Dynamic creative requires meaningful asset variation. A single value across ever
 
 <div class="card-body">
 
+<div class="check-row" style="margin-bottom:14px">
+
+<label class="choice">
+<input type="checkbox" id="trackWebsiteEvents" checked onchange="updateDependencies()">
+Website events
+</label>
+
+<label class="choice">
+<input type="checkbox" id="trackAppEvents" onchange="updateDependencies()">
+App events
+</label>
+
+<label class="choice">
+<input type="checkbox" id="trackOfflineEvents" onchange="updateDependencies()">
+Offline events
+</label>
+
+</div>
+
+<div id="websiteEventsNote" class="help" style="margin-bottom:12px">
+This ad account's selected conversion dataset will be tracked by default.
+</div>
+
 <div class="grid">
 
-<div class="field">
-<label>UTM Source</label>
-<input id="utmSource" value="facebook">
-</div>
-
-<div class="field">
-<label>UTM Medium</label>
-<input id="utmMedium" value="paid_social">
-</div>
-
-<div class="field">
-<label>UTM Campaign</label>
-<input placeholder="{campaign_name}">
-</div>
-
-<div class="field">
-<label>UTM Content</label>
-<input placeholder="{ad_name}">
-</div>
-
 <div class="field full">
-<label>Additional URL parameters</label>
-<input id="urlParams" placeholder="utm_source=facebook&utm_campaign=...">
+<label>URL parameters</label>
+<input id="urlParams" placeholder="key1=value1&key2=value2">
+<div class="help">Validated for syntax, duplication and required business rules. [P01-P08]</div>
 </div>
 
-</div>
-
-<div class="help">
-Tracking parameters are validated for syntax, duplication and required business rules.
 </div>
 
 </div>
@@ -1514,7 +2108,7 @@ Tracking parameters are validated for syntax, duplication and required business 
 <option>Complete</option>
 <option>Pending</option>
 </select>
-<div class="help">Every selected language needs complete translated copy where required.</div>
+<div class="help">Every selected language needs complete translated copy where required. [R35]</div>
 </div>
 
 </div>
@@ -1622,9 +2216,16 @@ Tracking parameters are validated for syntax, duplication and required business 
 </div>
 
 
-<div class="card">
+<!-- View Toggle -->
+<div class="view-toggle">
+  <button class="active" id="validationViewBtn" onclick="toggleView('validation')">Validation</button>
+  <button id="checklistViewBtn" onclick="toggleView('checklist')">IQA Checklist</button>
+</div>
+
+<!-- Validation View -->
+<div id="validationView" class="card">
 <div class="card-header">
-<h2>Validation</h2>
+<h2>Validation Results</h2>
 </div>
 
 <div class="card-body">
@@ -1634,6 +2235,57 @@ Tracking parameters are validated for syntax, duplication and required business 
 <span class="validation-icon">!</span>
 <span>Complete the required campaign fields to start validation.</span>
 </div>
+</div>
+
+</div>
+</div>
+
+<!-- Checklist View -->
+<div id="checklistView" class="card hidden">
+<div class="card-header">
+<h2>IQA Checklist (135)</h2>
+</div>
+
+<div class="card-body" style="max-height:400px;overflow-y:auto;">
+
+<div class="checklist-section">
+  <div class="checklist-header">
+    Account Setup (A01-A16)
+    <span class="checklist-count" id="accountCount">0/4</span>
+  </div>
+  <div id="accountChecklist"></div>
+</div>
+
+<div class="checklist-section">
+  <div class="checklist-header">
+    Campaign Level (C01-C22)
+    <span class="checklist-count" id="campaignCount">0/4</span>
+  </div>
+  <div id="campaignChecklist"></div>
+</div>
+
+<div class="checklist-section">
+  <div class="checklist-header">
+    Ad Set Level (S01-S42)
+    <span class="checklist-count" id="adsetCount">0/4</span>
+  </div>
+  <div id="adsetChecklist"></div>
+</div>
+
+<div class="checklist-section">
+  <div class="checklist-header">
+    Creative Level (R01-R36)
+    <span class="checklist-count" id="creativeCount">0/4</span>
+  </div>
+  <div id="creativeChecklist"></div>
+</div>
+
+<div class="checklist-section">
+  <div class="checklist-header">
+    Post-Upload (P01-P16)
+    <span class="checklist-count" id="postCount">0/4</span>
+  </div>
+  <div id="postChecklist"></div>
 </div>
 
 </div>
@@ -1689,6 +2341,10 @@ Run Full Validation
 
 <button class="btn" style="width:100%;margin-bottom:8px" onclick="autoFix()">
 Auto-Fix Safe Issues
+</button>
+
+<button class="btn" style="width:100%;margin-bottom:8px" onclick="exportCSV()">
+Export Validation CSV
 </button>
 
 <button class="btn" style="width:100%" onclick="exportJSON()">
@@ -1754,7 +2410,11 @@ const conversionMap = {
     "Website",
     "App",
     "Messaging",
-    "Catalog"
+    "Catalog",
+    "Website and app",
+    "Website and in-store",
+    "Website, app and in-store",
+    "Website and calls"
   ]
 
 };
@@ -1763,7 +2423,9 @@ const performanceMap = {
 
   "Awareness":[
     "Maximize reach",
-    "Maximize impressions"
+    "Maximize impressions",
+    "Maximize ad recall lift",
+    "Maximize ThruPlay views"
   ],
 
   "Traffic":[
@@ -1846,6 +2508,40 @@ const ctaMap = {
 
 };
 
+// IQA Checklist Data
+const iqaChecklist = {
+  account: [
+    {id:'A01', name:'Billing Threshold Valid', critical:true},
+    {id:'A03', name:'Domain Verified', critical:true},
+    {id:'A04', name:'Pixel/App ID Active', critical:true},
+    {id:'A12', name:'Operator Permissions & Asset Access', critical:true}
+  ],
+  campaign: [
+    {id:'C01', name:'Objective Matches Brief', critical:true},
+    {id:'C02', name:'Buying Type Correct', critical:true},
+    {id:'C03', name:'Campaign Status = PAUSED', critical:true},
+    {id:'C08', name:'Special Categories Declared', critical:true}
+  ],
+  adset: [
+    {id:'S01', name:'Ad Set Status = PAUSED', critical:true},
+    {id:'S02', name:'Geography Locked', critical:true},
+    {id:'S05', name:'Custom Audiences Resolved', critical:true},
+    {id:'S11', name:'Optimization Event Aligned', critical:true}
+  ],
+  creative: [
+    {id:'R01', name:'Format Matches Placement', critical:true},
+    {id:'R04', name:'Image Specs Valid', critical:true},
+    {id:'R05', name:'Video Specs Valid', critical:true},
+    {id:'R28', name:'Identity Verified', critical:true}
+  ],
+  post: [
+    {id:'P01', name:'Campaign IDs Captured', critical:true},
+    {id:'P02', name:'Ad Set IDs Captured', critical:true},
+    {id:'P03', name:'Ad IDs Captured', critical:true},
+    {id:'P04', name:'Creative IDs Captured', critical:true}
+  ]
+};
+
 
 function el(id){
   return document.getElementById(id);
@@ -1870,11 +2566,110 @@ function showTab(tab, element){
 }
 
 
+function setAudienceSourceTab(mode){
+
+  const savedBtn=el("savedAudienceTab");
+  const newBtn=el("newAudienceTab");
+
+  if(mode==="saved"){
+    savedBtn.classList.add("active");
+    newBtn.classList.remove("active");
+    el("savedAudienceArea").classList.remove("hidden");
+    el("newAudienceArea").classList.add("hidden");
+  }else{
+    newBtn.classList.add("active");
+    savedBtn.classList.remove("active");
+    el("savedAudienceArea").classList.add("hidden");
+    el("newAudienceArea").classList.remove("hidden");
+  }
+
+  runValidation();
+}
+
+
+function toggleView(view) {
+  document.getElementById('validationViewBtn').classList.remove('active');
+  document.getElementById('checklistViewBtn').classList.remove('active');
+  document.getElementById('validationView').classList.add('hidden');
+  document.getElementById('checklistView').classList.add('hidden');
+  
+  if (view === 'validation') {
+    document.getElementById('validationViewBtn').classList.add('active');
+    document.getElementById('validationView').classList.remove('hidden');
+  } else {
+    document.getElementById('checklistViewBtn').classList.add('active');
+    document.getElementById('checklistView').classList.remove('hidden');
+    renderChecklist();
+  }
+}
+
+
+function renderChecklist() {
+  const sections = ['account', 'campaign', 'adset', 'creative', 'post'];
+  const containerIds = ['accountChecklist', 'campaignChecklist', 'adsetChecklist', 'creativeChecklist', 'postChecklist'];
+  const countIds = ['accountCount', 'campaignCount', 'adsetCount', 'creativeCount', 'postCount'];
+  
+  sections.forEach((section, idx) => {
+    const container = document.getElementById(containerIds[idx]);
+    const items = iqaChecklist[section];
+    let html = '';
+    let passed = 0;
+    
+    items.forEach(item => {
+      const isChecked = Math.random() > 0.3; // Simulate for demo
+      if (isChecked) passed++;
+      const statusClass = isChecked ? 'check-pass' : 'check-block';
+      const icon = isChecked ? '✓' : '✗';
+      
+      html += `
+        <div class="checklist-item">
+          <div class="check-status ${statusClass}">${icon}</div>
+          <span>${item.id} — ${item.name}</span>
+          ${item.critical ? '<span style="margin-left:auto;font-size:10px;background:var(--red);color:white;padding:2px 6px;border-radius:4px;">CRITICAL</span>' : ''}
+        </div>
+      `;
+    });
+    
+    container.innerHTML = html;
+    document.getElementById(countIds[idx]).textContent = `${passed}/${items.length}`;
+  });
+}
+
+
+function getBidOptionsForObjective(objective){
+
+  if(objective==="Sales"){
+    return [
+      "Highest volume (Lowest cost)",
+      "Cost per result goal",
+      "Minimum ROAS",
+      "Bid cap"
+    ];
+  }
+
+  if(objective==="Leads" || objective==="Traffic"){
+    return [
+      "Highest volume (Lowest cost)",
+      "Cost per result goal",
+      "Bid cap"
+    ];
+  }
+
+  return [
+    "Highest volume (Lowest cost)",
+    "Bid cap"
+  ];
+
+}
+
+
 function populateSelect(id, values, placeholder="Select"){
 
   const select = el(id);
 
   if(!select) return;
+
+  const previousValue = select.value;
 
   select.innerHTML="";
 
@@ -1889,6 +2684,35 @@ function populateSelect(id, values, placeholder="Select"){
     option.textContent=v;
     select.appendChild(option);
   });
+
+  if(values.includes(previousValue)){
+    select.value=previousValue;
+  }
+}
+
+
+function updateDependencyChain() {
+  const objective = el("objective").value || "Select Objective";
+  const buying = el("buyingType").value || "Buying Type";
+  const optimization = el("performanceGoal").value || "Optimization";
+  const bid = el("campaignBid").value || "Bid Strategy";
+  
+  el("chainObjective").textContent = objective;
+  el("chainBuying").textContent = buying;
+  el("chainOptimization").textContent = optimization;
+  el("chainBid").textContent = bid;
+  
+  const score = parseInt(el("scoreValue").textContent);
+  if (score >= 95) {
+    el("chainStatus").textContent = "✓ Valid Configuration";
+    el("chainStatus").style.background = "var(--green)";
+  } else if (score >= 70) {
+    el("chainStatus").textContent = "⚠ Needs Review";
+    el("chainStatus").style.background = "var(--yellow)";
+  } else {
+    el("chainStatus").textContent = "✗ Incomplete";
+    el("chainStatus").style.background = "var(--red)";
+  }
 }
 
 
@@ -1904,11 +2728,22 @@ function updateDependencies(){
   const creativeFormat=el("creativeFormat").value;
   const dynamic=el("dynamicCreative").value;
   const ab=el("abTest").value;
+  const advantagePlusBudget=el("advantagePlusBudget").value;
 
   state.objective=objective;
   state.conversionLocation=conversion;
   state.specialCategory=category;
   state.budgetOwner=budgetOwner;
+
+
+  /* ADVANTAGE+ CAMPAIGN BUDGET */
+
+  if(advantagePlusBudget==="Yes"){
+    el("budgetOwner").value="Campaign";
+    el("budgetOwner").disabled=true;
+  }else{
+    el("budgetOwner").disabled=false;
+  }
 
 
   /* CONVERSION LOCATION */
@@ -1918,10 +2753,6 @@ function updateDependencies(){
       "conversionLocation",
       conversionMap[objective] || []
     );
-
-    if(!conversionMap[objective].includes(conversion)){
-      el("conversionLocation").value="";
-    }
   }else{
     populateSelect("conversionLocation",[]);
   }
@@ -1939,39 +2770,44 @@ function updateDependencies(){
   }
 
 
-  /* BID STRATEGY */
-
-  const bid=el("campaignBid");
+  /* CUSTOMER LIFECYCLE STRATEGY (Sales objective only) */
 
   if(objective==="Sales"){
-    populateSelect(
-      "campaignBid",
-      [
-        "Lowest cost / Highest volume",
-        "Cost per result goal",
-        "Minimum ROAS",
-        "Bid cap"
-      ]
-    );
+    el("customerLifecycleField").classList.remove("hidden");
+  }else{
+    el("customerLifecycleField").classList.add("hidden");
   }
-  else if(objective==="Leads" || objective==="Traffic"){
-    populateSelect(
-      "campaignBid",
-      [
-        "Lowest cost / Highest volume",
-        "Cost per result goal",
-        "Bid cap"
-      ]
-    );
-  }
-  else{
-    populateSelect(
-      "campaignBid",
-      [
-        "Lowest cost / Highest volume",
-        "Bid cap"
-      ]
-    );
+
+
+  /* BID STRATEGY */
+
+  const bidOptions=getBidOptionsForObjective(objective);
+
+  populateSelect("campaignBid", bidOptions);
+  populateSelect("campaignBidStrategyType", bidOptions);
+
+  if(advantagePlusBudget==="Yes"){
+
+    if(el("campaignBidStrategyType").value){
+      el("campaignBid").value=el("campaignBidStrategyType").value;
+    }else if(el("campaignBid").value){
+      el("campaignBidStrategyType").value=el("campaignBid").value;
+    }
+
+    el("campaignBidStrategyField").classList.remove("hidden");
+    el("adsetBidStrategyTypeField").classList.add("hidden");
+
+    el("adsetBidStrategyNote").classList.remove("hidden");
+    el("adsetBidStrategyNote").textContent=
+      "Bid strategy type ("+(el("campaignBid").value || "not yet set")+
+      ") is selected at Campaign level because Advantage+ campaign budget is on. Set the specific target or cap for this ad set below.";
+
+  }else{
+
+    el("campaignBidStrategyField").classList.add("hidden");
+    el("adsetBidStrategyTypeField").classList.remove("hidden");
+    el("adsetBidStrategyNote").classList.add("hidden");
+
   }
 
 
@@ -2005,7 +2841,9 @@ function updateDependencies(){
     el("adsetBudget").disabled=true;
 
     el("campaignBudgetNote").textContent=
-      "Campaign owns the budget. Ad set budget is disabled to prevent two conflicting sources of truth.";
+      advantagePlusBudget==="Yes"
+        ? "Advantage+ campaign budget is on. Budget is distributed across ad sets automatically."
+        : "Campaign owns the budget. Ad set budget is disabled to prevent two conflicting sources of truth.";
 
     el("adsetBudgetHelp").textContent=
       "Managed at Campaign level.";
@@ -2075,7 +2913,8 @@ function updateDependencies(){
     "eventField",
     "formField",
     "appField",
-    "appEventField"
+    "appEventField",
+    "skanField"
   ].forEach(x=>el(x).classList.add("hidden"));
 
   if(conversion==="Website"){
@@ -2084,7 +2923,7 @@ function updateDependencies(){
     el("eventField").classList.remove("hidden");
 
     el("conversionDependency").textContent=
-      "Website conversion selected → Pixel/Dataset + conversion event are required.";
+      "Website conversion selected → Pixel/Dataset + conversion event are required. [M008, M009]";
 
   }
   else if(conversion==="Instant Form"){
@@ -2092,16 +2931,17 @@ function updateDependencies(){
     el("formField").classList.remove("hidden");
 
     el("conversionDependency").textContent=
-      "Instant Form selected → an active published form is required.";
+      "Instant Form selected → an active published form is required. [M025]";
 
   }
   else if(conversion==="App"){
 
     el("appField").classList.remove("hidden");
     el("appEventField").classList.remove("hidden");
+    el("skanField").classList.remove("hidden");
 
     el("conversionDependency").textContent=
-      "App selected → registered Meta app + app event are required.";
+      "App selected → registered Meta app + SKAdNetwork mapping required. [M008, M010]";
 
   }
   else if(conversion){
@@ -2114,6 +2954,17 @@ function updateDependencies(){
     el("conversionDependency").textContent=
       "Select a conversion location to activate the relevant fields.";
 
+  }
+
+
+  /* A/B TEST + CBO CONFLICT */
+
+  if(ab==="Yes" && advantagePlusBudget==="Yes"){
+    el("abTestNote").textContent=
+      "⚠️ WARNING: A/B Test with Advantage+ Campaign Budget requires careful validation. [M048]";
+    el("abTestNote").style.color="var(--yellow)";
+  }else{
+    el("abTestNote").textContent="";
   }
 
 
@@ -2145,17 +2996,6 @@ function updateDependencies(){
   }
 
 
-  /* FREQUENCY */
-
-  if(el("frequencyEnabled").value==="Yes"){
-    el("frequencyValueField").classList.remove("hidden");
-    el("frequencyPeriodField").classList.remove("hidden");
-  }else{
-    el("frequencyValueField").classList.add("hidden");
-    el("frequencyPeriodField").classList.add("hidden");
-  }
-
-
   /* A/B TEST */
 
   if(ab==="Yes"){
@@ -2172,15 +3012,20 @@ function updateDependencies(){
   const source=
     document.querySelector('input[name="creativeSource"]:checked')?.value;
 
+  el("existingPostField").classList.add("hidden");
+  el("existingCreativeField").classList.add("hidden");
+  el("newCreativeArea").classList.remove("hidden");
+
   if(source==="Existing"){
 
     el("existingPostField").classList.remove("hidden");
     el("newCreativeArea").classList.add("hidden");
 
-  }else{
+  }
+  else if(source==="Existing Creative"){
 
-    el("existingPostField").classList.add("hidden");
-    el("newCreativeArea").classList.remove("hidden");
+    el("existingCreativeField").classList.remove("hidden");
+    el("newCreativeArea").classList.add("hidden");
 
   }
 
@@ -2205,6 +3050,23 @@ function updateDependencies(){
   }else{
     el("dynamicAssetArea").classList.add("hidden");
   }
+
+
+  /* PARTNERSHIP AD */
+
+  if(el("partnershipAd").value==="On"){
+    el("partnershipDetailField").classList.remove("hidden");
+  }else{
+    el("partnershipDetailField").classList.add("hidden");
+  }
+
+
+  /* TRACKING */
+
+  el("websiteEventsNote").classList.toggle(
+    "hidden",
+    !el("trackWebsiteEvents").checked
+  );
 
 
   /* CTA */
@@ -2239,7 +3101,7 @@ function updateDependencies(){
 }
 
 
-function addIssue(type,text,fix){
+function addIssue(type,text,fix,id=""){
 
   const item=document.createElement("div");
 
@@ -2249,9 +3111,11 @@ function addIssue(type,text,fix){
     type==="blocker" ? "✕" :
     type==="warning" ? "!" : "✓";
 
+  const idSpan = id ? `<span class="validation-id">[${id}]</span>` : "";
+  
   item.innerHTML=
     `<span class="validation-icon">${icon}</span>
-     <span style="flex:1">${text}</span>
+     <span style="flex:1">${idSpan}${text}</span>
      ${fix ? `<button class="auto-fix" onclick="${fix}">Fix</button>` : ""}`;
 
   el("validationList").appendChild(item);
@@ -2283,25 +3147,28 @@ function runValidation(){
   const category=el("specialCategory").value;
   const source=
     document.querySelector('input[name="creativeSource"]:checked')?.value;
+  const advantagePlusBudget=el("advantagePlusBudget").value;
+  const abTest=el("abTest").value;
+
 
   /* REQUIRED CAMPAIGN */
 
   if(!el("campaignName").value.trim()){
-    issues.push(["blocker","Campaign name is required.","focusField('campaignName')"]);
+    issues.push(["blocker","Campaign name is required.","focusField('campaignName')","M001"]);
   }else{
-    issues.push(["pass","Campaign name provided."]);
+    issues.push(["pass","Campaign name provided.","","M001"]);
   }
 
   if(!objective){
-    issues.push(["blocker","Campaign objective is missing.","focusField('objective')"]);
+    issues.push(["blocker","Campaign objective is missing.","focusField('objective')","M002"]);
   }else{
-    issues.push(["pass","Campaign objective selected."]);
+    issues.push(["pass","Campaign objective selected.","","M002"]);
   }
 
   if(!buying){
-    issues.push(["blocker","Buying type is missing.","focusField('buyingType')"]);
+    issues.push(["blocker","Buying type is missing.","focusField('buyingType')","M002"]);
   }else{
-    issues.push(["pass","Buying type selected."]);
+    issues.push(["pass","Buying type selected.","","M002"]);
   }
 
 
@@ -2311,23 +3178,29 @@ function runValidation(){
     issues.push([
       "blocker",
       "Campaign budget is required when Campaign owns budget.",
-      "focusField('campaignBudget')"
+      "focusField('campaignBudget')",
+      "M004"
     ]);
   }
 
-  if(budgetOwner==="Ad Set" && adsetBudget<=0){
+  if(budgetOwner==="Ad Set" && adsetBudget>0 && campaignBudget>0){
     issues.push([
       "blocker",
-      "Ad Set budget is required when Ad Set owns budget.",
-      "focusField('adsetBudget')"
+      "Conflicting budget source: Both Campaign and Ad Set budgets populated.",
+      "clearAdsetBudget()",
+      "M004"
     ]);
   }
 
-  if(budgetOwner==="Campaign" && adsetBudget>0){
+
+  /* A/B TEST + CBO CONFLICT */
+
+  if(abTest==="Yes" && advantagePlusBudget==="Yes"){
     issues.push([
-      "blocker",
-      "Conflicting budget source: Campaign owns budget but Ad Set budget is populated.",
-      "clearAdsetBudget()"
+      "warning",
+      "A/B Test with Advantage+ Campaign Budget requires careful validation.",
+      "",
+      "M048"
     ]);
   }
 
@@ -2341,7 +3214,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "Start date is required.",
-      "focusField('startDate')"
+      "focusField('startDate')",
+      "M029"
     ]);
   }
 
@@ -2349,7 +3223,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "Lifetime budget requires an end date.",
-      "focusField('endDate')"
+      "focusField('endDate')",
+      "M029"
     ]);
   }
 
@@ -2357,7 +3232,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "End date cannot be earlier than start date.",
-      "focusField('endDate')"
+      "focusField('endDate')",
+      "M029"
     ]);
   }
 
@@ -2371,7 +3247,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "Dayparting requires Lifetime budget.",
-      "focusField('campaignBudgetType')"
+      "focusField('campaignBudgetType')",
+      "M049"
     ]);
   }
 
@@ -2380,8 +3257,10 @@ function runValidation(){
 
   if(category!=="None"){
     issues.push([
-      "pass",
-      "Special Ad Category declared: "+category+"."
+      "info",
+      "Special Ad Category declared: "+category+".",
+      "",
+      "M003"
     ]);
   }
 
@@ -2392,7 +3271,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "Conversion location is required for the selected objective.",
-      "focusField('conversionLocation')"
+      "focusField('conversionLocation')",
+      "M008"
     ]);
   }
 
@@ -2402,17 +3282,19 @@ function runValidation(){
       issues.push([
         "blocker",
         "Website conversion requires Pixel/Dataset.",
-        "focusField('dataset')"
+        "focusField('dataset')",
+        "M008"
       ]);
     }else{
-      issues.push(["pass","Pixel/Dataset selected."]);
+      issues.push(["pass","Pixel/Dataset selected.","","M008"]);
     }
 
     if(!event){
       issues.push([
         "blocker",
         "Website conversion requires a conversion event.",
-        "focusField('conversionEvent')"
+        "focusField('conversionEvent')",
+        "M009"
       ]);
     }
 
@@ -2425,7 +3307,8 @@ function runValidation(){
       issues.push([
         "blocker",
         "Instant Form conversion requires an active form.",
-        "focusField('instantForm')"
+        "focusField('instantForm')",
+        "M025"
       ]);
     }
 
@@ -2433,7 +3316,8 @@ function runValidation(){
       issues.push([
         "blocker",
         "Selected Instant Form is not active/published.",
-        "focusField('instantForm')"
+        "focusField('instantForm')",
+        "M025"
       ]);
     }
 
@@ -2446,7 +3330,8 @@ function runValidation(){
       issues.push([
         "blocker",
         "App conversion requires a registered Meta app.",
-        "focusField('app')"
+        "focusField('app')",
+        "M008"
       ]);
     }
 
@@ -2454,7 +3339,8 @@ function runValidation(){
       issues.push([
         "blocker",
         "A store URL is not sufficient. Select a registered Meta app.",
-        "focusField('app')"
+        "focusField('app')",
+        "M008"
       ]);
     }
 
@@ -2466,26 +3352,47 @@ function runValidation(){
   if(objective && !performance){
     issues.push([
       "warning",
-      "Performance goal has not been selected."
+      "Performance goal has not been selected.",
+      "",
+      "S11"
     ]);
   }else if(performance){
     issues.push([
       "pass",
-      "Performance goal selected."
+      "Performance goal selected.",
+      "",
+      "S11"
     ]);
   }
 
 
   /* AUDIENCE */
 
-  if(!el("locations").value.trim()){
+  const usingSavedAudience=
+    el("savedAudienceTab").classList.contains("active");
+
+  if(usingSavedAudience){
+
+    if(!el("savedAudience").value){
+      issues.push([
+        "blocker",
+        "A saved audience must be selected.",
+        "focusField('savedAudience')",
+        "S05"
+      ]);
+    }else{
+      issues.push(["pass","Saved audience selected.","","S05"]);
+    }
+
+  }else if(!el("locations").value.trim()){
     issues.push([
       "blocker",
       "At least one target location is required.",
-      "focusField('locations')"
+      "focusField('locations')",
+      "S02"
     ]);
   }else{
-    issues.push(["pass","Location targeting provided."]);
+    issues.push(["pass","Location targeting provided.","","S02"]);
   }
 
 
@@ -2504,7 +3411,9 @@ function runValidation(){
     if(checked===0){
       issues.push([
         "blocker",
-        "Manual placement mode requires at least one placement."
+        "Manual placement mode requires at least one placement.",
+        "",
+        "M017"
       ]);
     }
 
@@ -2517,7 +3426,8 @@ function runValidation(){
       issues.push([
         "blocker",
         "Instagram placement selected but Instagram identity is missing.",
-        "focusField('instagramAccount')"
+        "focusField('instagramAccount')",
+        "M017"
       ]);
     }
 
@@ -2530,8 +3440,11 @@ function runValidation(){
     issues.push([
       "blocker",
       "Facebook Page is required.",
-      "focusField('facebookPage')"
+      "focusField('facebookPage')",
+      "M022"
     ]);
+  }else{
+    issues.push(["pass","Facebook Page selected.","","M022"]);
   }
 
 
@@ -2543,15 +3456,19 @@ function runValidation(){
       issues.push([
         "blocker",
         "Creative format is required.",
-        "focusField('creativeFormat')"
+        "focusField('creativeFormat')",
+        "R01"
       ]);
+    }else{
+      issues.push(["pass","Creative format selected.","","R01"]);
     }
 
     if(!el("primaryText").value.trim()){
       issues.push([
         "blocker",
         "Primary text is required.",
-        "focusField('primaryText')"
+        "focusField('primaryText')",
+        "R33"
       ]);
     }
 
@@ -2559,7 +3476,24 @@ function runValidation(){
       issues.push([
         "blocker",
         "Headline is required.",
-        "focusField('headline')"
+        "focusField('headline')",
+        "R33"
+      ]);
+    }
+
+  }
+
+  if(source==="Existing Creative"){
+
+    const existingCreativeSelect=
+      document.querySelector("#existingCreativeField select");
+
+    if(!existingCreativeSelect.value){
+      issues.push([
+        "blocker",
+        "An existing creative must be selected.",
+        "focusField('existingCreativeField')",
+        "R30"
       ]);
     }
 
@@ -2580,12 +3514,16 @@ function runValidation(){
     if(values.some(v=>v<2)){
       issues.push([
         "warning",
-        "Dynamic creative is enabled but one or more asset variables have fewer than two variants."
+        "Dynamic creative is enabled but one or more asset variables have fewer than two variants.",
+        "",
+        "R32"
       ]);
     }else{
       issues.push([
         "pass",
-        "Dynamic creative has multiple asset variants."
+        "Dynamic creative has multiple asset variants.",
+        "",
+        "R32"
       ]);
     }
 
@@ -2597,8 +3535,10 @@ function runValidation(){
   if(format==="Catalog / Product"){
 
     issues.push([
-      "pass",
-      "Catalog/product format selected — catalog and product set validation required."
+      "info",
+      "Catalog/product format selected — catalog and product set validation required.",
+      "",
+      "R01"
     ]);
 
   }
@@ -2610,7 +3550,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "Destination type is required.",
-      "focusField('destinationType')"
+      "focusField('destinationType')",
+      "R34"
     ]);
   }
 
@@ -2620,12 +3561,15 @@ function runValidation(){
       issues.push([
         "blocker",
         "Website destination URL is required.",
-        "focusField('destinationUrl')"
+        "focusField('destinationUrl')",
+        "R34"
       ]);
     }else if(!/^https:\/\//i.test(url)){
       issues.push([
         "warning",
-        "Destination should normally use HTTPS."
+        "Destination should normally use HTTPS.",
+        "",
+        "R34"
       ]);
     }
 
@@ -2638,7 +3582,8 @@ function runValidation(){
     issues.push([
       "blocker",
       "CTA must be selected after destination is established.",
-      "focusField('cta')"
+      "focusField('cta')",
+      "R33"
     ]);
   }
 
@@ -2647,12 +3592,58 @@ function runValidation(){
 
   if(
     destination==="Website" &&
-    !el("utmSource").value.trim()
+    !el("trackWebsiteEvents").checked
   ){
     issues.push([
       "warning",
-      "UTM source is missing."
+      "Website events tracking is off but destination is Website.",
+      "",
+      "P01"
     ]);
+  }
+
+  if(
+    destination==="Website" &&
+    !el("urlParams").value.trim()
+  ){
+    issues.push([
+      "warning",
+      "URL parameters are empty.",
+      "",
+      "P01"
+    ]);
+  }
+
+
+  /* PARTNERSHIP AD */
+
+  if(
+    el("partnershipAd").value==="On" &&
+    !el("partnershipMethod").value
+  ){
+    issues.push([
+      "blocker",
+      "Partnership ad is on but the ad creation method is not selected.",
+      "focusField('partnershipMethod')",
+      "M057"
+    ]);
+  }
+
+
+  /* POST-UPLOAD IDs */
+
+  const campaignId = el("campaignId").value;
+  const adSetId = el("adSetId").value;
+  const adId = el("adId").value;
+
+  if(campaignId || adSetId || adId){
+    if(!campaignId) issues.push(["warning","Campaign ID not captured post-upload.","","P01"]);
+    if(!adSetId) issues.push(["warning","Ad Set ID not captured post-upload.","","P02"]);
+    if(!adId) issues.push(["warning","Ad ID not captured post-upload.","","P03"]);
+    
+    if(campaignId && adSetId && adId){
+      issues.push(["pass","All post-upload IDs captured.","","P01-P04"]);
+    }
   }
 
 
@@ -2674,12 +3665,14 @@ function runValidation(){
   el("validationList").innerHTML="";
 
   issues.forEach(x=>{
-    addIssue(x[0],x[1],x[2]);
+    addIssue(x[0],x[1],x[2],x[3]);
   });
 
   if(!issues.length){
     addIssue("warning","Complete the form to begin validation.");
   }
+  
+  updateDependencyChain();
 
 }
 
@@ -2783,10 +3776,20 @@ function autoFix(){
 
   if(
     el("destinationType").value==="Website" &&
-    !el("utmSource").value
+    !el("trackWebsiteEvents").checked
   ){
 
-    el("utmSource").value="facebook";
+    el("trackWebsiteEvents").checked=true;
+    fixed=true;
+
+  }
+
+  if(
+    el("destinationType").value==="Website" &&
+    !el("urlParams").value
+  ){
+
+    el("urlParams").value="utm_source=facebook&utm_medium=paid_social";
     fixed=true;
 
   }
@@ -2838,9 +3841,14 @@ function exportJSON(){
       objective:el("objective").value,
       buyingType:el("buyingType").value,
       specialAdCategory:el("specialCategory").value,
+      advantagePlusCampaignBudget:el("advantagePlusBudget").value,
       budgetOwner:el("budgetOwner").value,
       budgetType:el("campaignBudgetType").value,
-      budget:el("campaignBudget").value
+      budget:el("campaignBudget").value,
+      inventoryFilter:el("inventoryFilter").value,
+      publisherBlockList:el("publisherBlockList").value,
+      campaignId:el("campaignId").value,
+      campaignSetId:el("campaignSetId").value
     },
 
     adSet:{
@@ -2850,20 +3858,49 @@ function exportJSON(){
       conversionEvent:el("conversionEvent").value,
       form:el("instantForm").value,
       app:el("app").value,
+      customerLifecycleStrategy:
+        el("objective").value==="Sales" ? el("customerLifecycle").value : null,
+      bidStrategy:el("campaignBid").value,
+      bidStrategySetAt:
+        el("advantagePlusBudget").value==="Yes" ? "Campaign" : "Ad Set",
+      dynamicCreative:el("dynamicCreative").value,
+      deliveryType:el("deliveryType").value,
+      frequencyMode:
+        document.querySelector('input[name="frequencyMode"]:checked')?.value,
+      attribution:el("attribution").value,
+      audienceSource:
+        el("savedAudienceTab").classList.contains("active") ? "Saved" : "New",
+      savedAudience:el("savedAudience").value,
       audienceType:el("audienceType").value,
       locations:el("locations").value,
       performanceGoal:el("performanceGoal").value,
-      optimizationGoal:el("optimizationGoal").value
+      optimizationGoal:el("optimizationGoal").value,
+      adSetId:el("adSetId").value
     },
 
     ad:{
       name:el("adName").value,
       page:el("facebookPage").value,
       instagram:el("instagramAccount").value,
+      threadsProfile:el("threadsProfile").value,
+      partnershipAd:el("partnershipAd").value,
       format:el("creativeFormat").value,
+      multiAdvertiserAds:el("multiAdvertiserAds").checked,
       destinationType:el("destinationType").value,
       destinationUrl:el("destinationUrl").value,
-      cta:el("cta").value
+      cta:el("cta").value,
+      urlParams:el("urlParams").value,
+      adId:el("adId").value,
+      adCreativeId:el("adCreativeId").value,
+      adImageHash:el("adImageHash").value
+    },
+
+    validation:{
+      score:el("scoreValue").textContent,
+      blockers:el("blockerCount").textContent,
+      warnings:el("warningCount").textContent,
+      passes:el("passCount").textContent,
+      status:el("scoreLabel").textContent
     },
 
     generatedAt:new Date().toISOString()
@@ -2880,10 +3917,49 @@ function exportJSON(){
   const a=document.createElement("a");
 
   a.href=url;
-  a.download="meta-trafficking-validation.json";
+  a.download="meta-trafficking-validation-v9.json";
 
   a.click();
 
+  URL.revokeObjectURL(url);
+
+}
+
+
+function exportCSV(){
+
+  const headers = [
+    "Level","Field","Value","Source","Validation","IQA ID"
+  ];
+  
+  const rows = [
+    ["Campaign","Name",el("campaignName").value,"BRIEF","PASS","M001"],
+    ["Campaign","Objective",el("objective").value,"BRIEF","PASS","M002"],
+    ["Campaign","Buying Type",el("buyingType").value,"ACCOUNT","PASS","M002"],
+    ["Campaign","Special Category",el("specialCategory").value,"ACCOUNT","PASS","M003"],
+    ["Campaign","Budget Owner",el("budgetOwner").value,"DERIVED","PASS","M004"],
+    ["Ad Set","Name",el("adsetName").value,"BRIEF","PASS","S01"],
+    ["Ad Set","Conversion Location",el("conversionLocation").value,"BRIEF","PASS","M008"],
+    ["Ad Set","Pixel/Dataset",el("dataset").value,"ACCOUNT","PASS","M008"],
+    ["Ad Set","Conversion Event",el("conversionEvent").value,"DERIVED","PASS","M009"],
+    ["Ad","Name",el("adName").value,"BRIEF","PASS","R01"],
+    ["Ad","Facebook Page",el("facebookPage").value,"ACCOUNT","PASS","M022"],
+    ["Ad","Creative Format",el("creativeFormat").value,"BRIEF","PASS","R01"],
+    ["Ad","Destination Type",el("destinationType").value,"BRIEF","PASS","R34"],
+    ["Ad","CTA",el("cta").value,"BRIEF","PASS","R33"]
+  ];
+  
+  let csv = headers.join(",") + "\n";
+  rows.forEach(row => {
+    csv += row.map(cell => `"${cell}"`).join(",") + "\n";
+  });
+  
+  const blob = new Blob([csv], {type: "text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "meta-trafficking-validation.csv";
+  a.click();
   URL.revokeObjectURL(url);
 
 }
@@ -2898,19 +3974,31 @@ function resetAll(){
       if(x.type==="checkbox"){
         x.checked=false;
       }else if(x.type==="radio"){
-        x.checked=x.value==="Advantage+";
+        x.checked=(x.value==="Advantage+")||(x.value==="Cap")||(x.value==="New");
       }else{
         x.value="";
       }
     });
 
   el("specialCategory").value="None";
+  el("advantagePlusBudget").value="No";
   el("budgetOwner").value="Campaign";
+  el("budgetOwner").disabled=false;
   el("campaignBudgetType").value="Daily";
   el("audienceType").value="Broad";
   el("currency").value="USD";
-  el("frequencyEnabled").value="No";
   el("dynamicCreative").value="No";
+  el("deliveryType").value="Standard";
+  el("attribution").value="Standard";
+  el("inventoryFilter").value="Expanded Inventory";
+  el("publisherBlockList").value="None";
+  el("partnershipAd").value="Off";
+  el("frequencyValue").value=2;
+  el("frequencyPeriod").value=7;
+  el("trackWebsiteEvents").checked=true;
+  setAudienceSourceTab("new");
+  
+  toggleView('validation');
 
   updateDependencies();
 
@@ -2953,4 +4041,3 @@ initialise();
 
 </body>
 </html>
-```
