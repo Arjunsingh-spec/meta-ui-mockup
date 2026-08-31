@@ -701,6 +701,7 @@ input:disabled,select:disabled,textarea:disabled{
 .check-pass{background:var(--green);color:white}
 .check-review{background:var(--yellow);color:white}
 .check-block{background:var(--red);color:white}
+.check-manual{background:var(--muted);color:white}
 
 /* Creative Specs */
 .specs-table{
@@ -785,6 +786,34 @@ input:disabled,select:disabled,textarea:disabled{
   .header-actions{display:none}
   .id-grid{grid-template-columns:1fr}
 }
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --text:#f1f5f9;
+    --muted:#94a3b8;
+    --border:#334155;
+  }
+  /* Score ring and asset panels use light literals for contrast reasons
+     (green/red/yellow washes, white score-circle punch-out) — leave
+     those as-is rather than inverting, since they already read fine
+     against a dark card background. */
+}
+
+@media print{
+  .header-actions,.view-toggle,.qa-controls,.dependency-chain#templateBar{
+    display:none!important;
+  }
+  .app{max-width:100%;padding:0}
+  .card{break-inside:avoid;box-shadow:none;border:1px solid #ccc}
+  body{background:white}
+}
 </style>
 </head>
 
@@ -798,18 +827,31 @@ input:disabled,select:disabled,textarea:disabled{
     <div>
       <h1>Meta Trafficking Validator v9.0</h1>
       <div class="subtitle">
-        IQA Dashboard • 135 Validation Checks • Dependency Engine
+        IQA Dashboard • Live Field Validation • Dependency Engine
       </div>
     </div>
   </div>
 
   <div class="header-actions">
+    <button class="btn" id="undoBtn" onclick="undo()" title="Ctrl+Z" disabled>↶ Undo</button>
+    <button class="btn" id="redoBtn" onclick="redo()" title="Ctrl+Shift+Z" disabled>↷ Redo</button>
     <button class="btn" onclick="resetAll()">Reset</button>
     <button class="btn" onclick="exportCSV()">Export CSV</button>
     <button class="btn success" onclick="exportJSON()">Export JSON</button>
     <button class="btn primary" onclick="publishCheck()">Validate & Publish</button>
   </div>
 </header>
+
+<div class="dependency-chain" id="templateBar">
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;">⚡ Quick Start Templates</div>
+  <div class="chain-flow">
+    <select id="templateSelect" style="width:auto;min-width:220px;display:inline-block;">
+      <option value="">Choose a template…</option>
+    </select>
+    <button class="btn" style="padding:8px 12px" onclick="loadTemplate(el('templateSelect').value)">Load Template</button>
+    <span class="help" style="margin:0 0 0 6px">Fills independent fields, then re-derives dependent dropdowns (objective, conversion location, CTA). Overwrites current form — use Undo to revert.</span>
+  </div>
+</div>
 
 <!-- Dependency Chain Visualization -->
 <div class="dependency-chain">
@@ -828,19 +870,19 @@ input:disabled,select:disabled,textarea:disabled{
 </div>
 
 <div class="steps">
-  <div class="step active" onclick="showTab('campaign',this)">
+  <div class="step active" onclick="showTab('campaign',this)" title="Alt+1">
     <span class="step-number">1</span>
     <span class="step-title">Campaign</span>
     <span class="step-desc">Objective, buying, budget, compliance</span>
   </div>
 
-  <div class="step" onclick="showTab('adset',this)">
+  <div class="step" onclick="showTab('adset',this)" title="Alt+2">
     <span class="step-number">2</span>
     <span class="step-title">Ad Set</span>
     <span class="step-desc">Audience, placements, optimization</span>
   </div>
 
-  <div class="step" onclick="showTab('ad',this)">
+  <div class="step" onclick="showTab('ad',this)" title="Alt+3">
     <span class="step-number">3</span>
     <span class="step-title">Ad</span>
     <span class="step-desc">Identity, creative, destination, tracking</span>
@@ -2243,10 +2285,14 @@ This ad account's selected conversion dataset will be tracked by default.
 <!-- Checklist View -->
 <div id="checklistView" class="card hidden">
 <div class="card-header">
-<h2>IQA Checklist (135)</h2>
+<h2>IQA Checklist — 20 of 135 tracked</h2>
 </div>
 
 <div class="card-body" style="max-height:400px;overflow-y:auto;">
+
+<div class="help" style="margin-bottom:12px">
+Section ranges (A01-A16, C01-C22, etc.) reflect the full 135-point IQA audit framework. This tool can only verify items backed by a field in the form above — those show a live pass/fail/warning pulled from the same validation engine as the Validation tab. Everything else (billing, domain verification, live campaign status in Ads Manager, permissions, "matches brief" judgment calls) is marked <strong>MANUAL</strong> and needs to be checked outside this tool.
+</div>
 
 <div class="checklist-section">
   <div class="checklist-header">
@@ -2328,7 +2374,7 @@ This ad account's selected conversion dataset will be tracked by default.
 </div>
 
 
-<div class="card">
+<div class="card qa-controls">
 <div class="card-header">
 <h2>QA Controls</h2>
 </div>
@@ -2343,6 +2389,16 @@ Run Full Validation
 Auto-Fix Safe Issues
 </button>
 
+<button class="btn" style="width:100%;margin-bottom:8px" onclick="saveToLocalStorage(true)">
+Save Draft (Ctrl+S)
+</button>
+
+<button class="btn" style="width:100%;margin-bottom:8px" onclick="loadFromLocalStorage(true)">
+Load Draft
+</button>
+
+<div id="autosaveStatus" class="help" style="text-align:center;margin-bottom:8px"></div>
+
 <button class="btn" style="width:100%;margin-bottom:8px" onclick="exportCSV()">
 Export Validation CSV
 </button>
@@ -2350,6 +2406,7 @@ Export Validation CSV
 <button class="btn" style="width:100%" onclick="exportJSON()">
 Export Validation JSON
 </button>
+
 
 </div>
 </div>
@@ -2369,6 +2426,11 @@ const state = {
   specialCategory:"None",
   budgetOwner:"Campaign"
 };
+
+// Populated at the end of every runValidation() call. The IQA Checklist
+// view reads from this instead of simulating results, so both views
+// always agree with each other and with the live form state.
+let lastIssues = [];
 
 const conversionMap = {
 
@@ -2509,36 +2571,41 @@ const ctaMap = {
 };
 
 // IQA Checklist Data
+// Each item either maps to a real [ID] emitted by runValidation() (via
+// "checkId"), reads a live DOM signal directly (via "liveCheck"), or has
+// no signal this tool can derive at all (no checkId/liveCheck — rendered
+// as "Manual" rather than guessed). Nothing here is simulated: a status
+// is only ever pass/fail if something in the form actually supports it.
 const iqaChecklist = {
   account: [
     {id:'A01', name:'Billing Threshold Valid', critical:true},
     {id:'A03', name:'Domain Verified', critical:true},
-    {id:'A04', name:'Pixel/App ID Active', critical:true},
+    {id:'A04', name:'Pixel/App ID Active', critical:true, checkId:'M008'},
     {id:'A12', name:'Operator Permissions & Asset Access', critical:true}
   ],
   campaign: [
     {id:'C01', name:'Objective Matches Brief', critical:true},
     {id:'C02', name:'Buying Type Correct', critical:true},
     {id:'C03', name:'Campaign Status = PAUSED', critical:true},
-    {id:'C08', name:'Special Categories Declared', critical:true}
+    {id:'C08', name:'Special Categories Declared', critical:true, liveCheck:'specialCategory'}
   ],
   adset: [
     {id:'S01', name:'Ad Set Status = PAUSED', critical:true},
-    {id:'S02', name:'Geography Locked', critical:true},
-    {id:'S05', name:'Custom Audiences Resolved', critical:true},
-    {id:'S11', name:'Optimization Event Aligned', critical:true}
+    {id:'S02', name:'Geography Locked', critical:true, checkId:'S02'},
+    {id:'S05', name:'Custom Audiences Resolved', critical:true, checkId:'S05'},
+    {id:'S11', name:'Optimization Event Aligned', critical:true, checkId:'S11'}
   ],
   creative: [
-    {id:'R01', name:'Format Matches Placement', critical:true},
-    {id:'R04', name:'Image Specs Valid', critical:true},
-    {id:'R05', name:'Video Specs Valid', critical:true},
-    {id:'R28', name:'Identity Verified', critical:true}
+    {id:'R01', name:'Format Matches Placement', critical:true, checkId:'R01'},
+    {id:'R04', name:'Image Specs Valid', critical:true, liveCheck:'assetPanel'},
+    {id:'R05', name:'Video Specs Valid', critical:true, liveCheck:'assetPanel'},
+    {id:'R28', name:'Identity Verified', critical:true, checkId:'M022'}
   ],
   post: [
-    {id:'P01', name:'Campaign IDs Captured', critical:true},
-    {id:'P02', name:'Ad Set IDs Captured', critical:true},
-    {id:'P03', name:'Ad IDs Captured', critical:true},
-    {id:'P04', name:'Creative IDs Captured', critical:true}
+    {id:'P01', name:'Campaign IDs Captured', critical:true, checkId:'P01'},
+    {id:'P02', name:'Ad Set IDs Captured', critical:true, checkId:'P02'},
+    {id:'P03', name:'Ad IDs Captured', critical:true, checkId:'P03'},
+    {id:'P04', name:'Creative IDs Captured', critical:true, checkId:'P04'}
   ]
 };
 
@@ -2604,34 +2671,103 @@ function toggleView(view) {
 }
 
 
+function getChecklistItemStatus(item){
+
+  // liveCheck: a direct DOM read for items that don't correspond to a
+  // single runValidation() issue (e.g. a field that's always populated,
+  // or the static asset panel).
+  if(item.liveCheck==="specialCategory"){
+    // The Special Ad Category select always holds a value (defaults to
+    // "None"), so "declared" is unconditionally true — this reflects
+    // that honestly rather than treating "None" as a failure.
+    return "pass";
+  }
+
+  if(item.liveCheck==="assetPanel"){
+    const assets=[...document.querySelectorAll("#ad .asset")];
+    if(assets.some(a=>a.classList.contains("fail"))) return "fail";
+    if(assets.some(a=>a.classList.contains("warn"))) return "warning";
+    return "pass";
+  }
+
+  // checkId: look up the most recent matching issue(s) from the last
+  // runValidation() pass. Multiple issues can share an id (e.g. a
+  // blocker AND its "selected" pass counterpart never coexist, but a
+  // blocker and a warning could both be tagged the same id in theory) —
+  // a blocker always wins, then a warning, then pass/info.
+  if(item.checkId){
+
+    const matches=lastIssues.filter(x=>x[3]===item.checkId);
+
+    if(matches.length===0) return "manual";
+
+    if(matches.some(x=>x[0]==="blocker")) return "fail";
+    if(matches.some(x=>x[0]==="warning")) return "warning";
+    return "pass";
+
+  }
+
+  // No checkId and no liveCheck defined: this tool has no data source
+  // for the item (billing, domain verification, live campaign/ad set
+  // status in Ads Manager, "matches brief" judgment calls, permissions).
+  // Rendered as "Manual" rather than guessed.
+  return "manual";
+
+}
+
+
 function renderChecklist() {
   const sections = ['account', 'campaign', 'adset', 'creative', 'post'];
   const containerIds = ['accountChecklist', 'campaignChecklist', 'adsetChecklist', 'creativeChecklist', 'postChecklist'];
   const countIds = ['accountCount', 'campaignCount', 'adsetCount', 'creativeCount', 'postCount'];
-  
+
   sections.forEach((section, idx) => {
     const container = document.getElementById(containerIds[idx]);
     const items = iqaChecklist[section];
     let html = '';
     let passed = 0;
-    
+    let automatable = 0;
+
     items.forEach(item => {
-      const isChecked = Math.random() > 0.3; // Simulate for demo
-      if (isChecked) passed++;
-      const statusClass = isChecked ? 'check-pass' : 'check-block';
-      const icon = isChecked ? '✓' : '✗';
-      
+
+      const status=getChecklistItemStatus(item);
+
+      let statusClass, icon, trailingBadge;
+
+      if(status==="pass"){
+        statusClass='check-pass'; icon='✓'; passed++; automatable++;
+      }else if(status==="warning"){
+        statusClass='check-review'; icon='!'; automatable++;
+      }else if(status==="fail"){
+        statusClass='check-block'; icon='✗'; automatable++;
+      }else{
+        statusClass='check-manual'; icon='–';
+      }
+
+      if(status==="manual"){
+        trailingBadge='<span style="margin-left:auto;font-size:10px;background:var(--muted);color:white;padding:2px 6px;border-radius:4px;">MANUAL — not tracked by this tool</span>';
+      }else if(item.critical){
+        trailingBadge='<span style="margin-left:auto;font-size:10px;background:var(--red);color:white;padding:2px 6px;border-radius:4px;">CRITICAL</span>';
+      }else{
+        trailingBadge='';
+      }
+
       html += `
         <div class="checklist-item">
           <div class="check-status ${statusClass}">${icon}</div>
           <span>${item.id} — ${item.name}</span>
-          ${item.critical ? '<span style="margin-left:auto;font-size:10px;background:var(--red);color:white;padding:2px 6px;border-radius:4px;">CRITICAL</span>' : ''}
+          ${trailingBadge}
         </div>
       `;
     });
-    
+
     container.innerHTML = html;
-    document.getElementById(countIds[idx]).textContent = `${passed}/${items.length}`;
+
+    const manualCount = items.length - automatable;
+    document.getElementById(countIds[idx]).textContent =
+      manualCount>0
+        ? `${passed}/${automatable} · ${manualCount} manual`
+        : `${passed}/${automatable}`;
   });
 }
 
@@ -3157,6 +3293,14 @@ function runValidation(){
     issues.push(["blocker","Campaign name is required.","focusField('campaignName')","M001"]);
   }else{
     issues.push(["pass","Campaign name provided.","","M001"]);
+
+    if(el("campaignName").value.length > 128){
+      issues.push(["blocker","Campaign name exceeds 128 characters.","focusField('campaignName')","M001"]);
+    }
+
+    if(!/^[\w\s|\-:]+$/.test(el("campaignName").value)){
+      issues.push(["warning","Campaign name contains special characters.","focusField('campaignName')","M001"]);
+    }
   }
 
   if(!objective){
@@ -3183,11 +3327,29 @@ function runValidation(){
     ]);
   }
 
+  if(budgetOwner==="Ad Set" && adsetBudget<=0){
+    issues.push([
+      "blocker",
+      "Ad Set budget is required when Ad Set owns budget.",
+      "focusField('adsetBudget')",
+      "M004"
+    ]);
+  }
+
+  if(budgetOwner==="Campaign" && adsetBudget>0){
+    issues.push([
+      "blocker",
+      "Conflicting budget source: Campaign owns budget but Ad Set budget is populated.",
+      "clearAdsetBudget()",
+      "M004"
+    ]);
+  }
+
   if(budgetOwner==="Ad Set" && adsetBudget>0 && campaignBudget>0){
     issues.push([
       "blocker",
       "Conflicting budget source: Both Campaign and Ad Set budgets populated.",
-      "clearAdsetBudget()",
+      "clearCampaignBudget()",
       "M004"
     ]);
   }
@@ -3405,7 +3567,7 @@ function runValidation(){
 
     const checked=
       document.querySelectorAll(
-        '#manualPlacements input[type="checkbox"]:checked'
+        '#manualPlacements .placement-group-body input[type="checkbox"]:checked'
       ).length;
 
     if(checked===0){
@@ -3419,7 +3581,7 @@ function runValidation(){
 
     const instagramSelected=
       [...document.querySelectorAll(
-        '#manualPlacements input[type="checkbox"]:checked'
+        '#manualPlacements .placement-group-body input[type="checkbox"]:checked'
       )].some(x=>x.value.startsWith("Instagram"));
 
     if(instagramSelected && !ig){
@@ -3614,6 +3776,30 @@ function runValidation(){
     ]);
   }
 
+  if(
+    el("urlParams").value &&
+    !/^[a-zA-Z0-9_=&%\-\.]+$/.test(el("urlParams").value)
+  ){
+    issues.push([
+      "warning",
+      "URL parameters contain invalid characters.",
+      "focusField('urlParams')",
+      "P01"
+    ]);
+  }
+
+  if(
+    el("adImageHash").value &&
+    !/^[a-f0-9]{32}$/i.test(el("adImageHash").value)
+  ){
+    issues.push([
+      "warning",
+      "Image hash format appears invalid (expected 32 hex chars).",
+      "focusField('adImageHash')",
+      "P05"
+    ]);
+  }
+
 
   /* PARTNERSHIP AD */
 
@@ -3635,13 +3821,22 @@ function runValidation(){
   const campaignId = el("campaignId").value;
   const adSetId = el("adSetId").value;
   const adId = el("adId").value;
+  const adCreativeId = el("adCreativeId").value;
 
-  if(campaignId || adSetId || adId){
+  if(campaignId || adSetId || adId || adCreativeId){
     if(!campaignId) issues.push(["warning","Campaign ID not captured post-upload.","","P01"]);
+    else issues.push(["pass","Campaign ID captured post-upload.","","P01"]);
+
     if(!adSetId) issues.push(["warning","Ad Set ID not captured post-upload.","","P02"]);
+    else issues.push(["pass","Ad Set ID captured post-upload.","","P02"]);
+
     if(!adId) issues.push(["warning","Ad ID not captured post-upload.","","P03"]);
-    
-    if(campaignId && adSetId && adId){
+    else issues.push(["pass","Ad ID captured post-upload.","","P03"]);
+
+    if(!adCreativeId) issues.push(["warning","Ad Creative ID not captured post-upload.","","P04"]);
+    else issues.push(["pass","Ad Creative ID captured post-upload.","","P04"]);
+
+    if(campaignId && adSetId && adId && adCreativeId){
       issues.push(["pass","All post-upload IDs captured.","","P01-P04"]);
     }
   }
@@ -3671,7 +3866,15 @@ function runValidation(){
   if(!issues.length){
     addIssue("warning","Complete the form to begin validation.");
   }
-  
+
+  lastIssues = issues;
+
+  // Keep the checklist view in sync if it's currently visible, so
+  // switching tabs never shows stale results from a prior form state.
+  if(!el("checklistView").classList.contains("hidden")){
+    renderChecklist();
+  }
+
   updateDependencyChain();
 
 }
@@ -3744,6 +3947,15 @@ function focusField(id){
 function clearAdsetBudget(){
 
   el("adsetBudget").value="";
+
+  updateDependencies();
+
+}
+
+
+function clearCampaignBudget(){
+
+  el("campaignBudget").value="";
 
   updateDependencies();
 
@@ -3926,34 +4138,56 @@ function exportJSON(){
 }
 
 
+function statusForCsvId(id){
+
+  // Reads real validation state from the last runValidation() pass —
+  // never a hardcoded string. A row's IQA ID can have multiple issues
+  // attached (e.g. a field that's both required and format-checked);
+  // a blocker always wins, then a warning, then pass/info. An ID with
+  // no matching issue at all means this tool doesn't check it, which
+  // is reported honestly as N/A rather than assumed passing.
+  const matches=lastIssues.filter(x=>x[3]===id);
+
+  if(matches.length===0) return "N/A";
+  if(matches.some(x=>x[0]==="blocker")) return "FAIL";
+  if(matches.some(x=>x[0]==="warning")) return "WARNING";
+  return "PASS";
+
+}
+
+
 function exportCSV(){
+
+  // Ensure lastIssues reflects the current form state before exporting,
+  // in case fields changed since the last render.
+  runValidation();
 
   const headers = [
     "Level","Field","Value","Source","Validation","IQA ID"
   ];
-  
+
   const rows = [
-    ["Campaign","Name",el("campaignName").value,"BRIEF","PASS","M001"],
-    ["Campaign","Objective",el("objective").value,"BRIEF","PASS","M002"],
-    ["Campaign","Buying Type",el("buyingType").value,"ACCOUNT","PASS","M002"],
-    ["Campaign","Special Category",el("specialCategory").value,"ACCOUNT","PASS","M003"],
-    ["Campaign","Budget Owner",el("budgetOwner").value,"DERIVED","PASS","M004"],
-    ["Ad Set","Name",el("adsetName").value,"BRIEF","PASS","S01"],
-    ["Ad Set","Conversion Location",el("conversionLocation").value,"BRIEF","PASS","M008"],
-    ["Ad Set","Pixel/Dataset",el("dataset").value,"ACCOUNT","PASS","M008"],
-    ["Ad Set","Conversion Event",el("conversionEvent").value,"DERIVED","PASS","M009"],
-    ["Ad","Name",el("adName").value,"BRIEF","PASS","R01"],
-    ["Ad","Facebook Page",el("facebookPage").value,"ACCOUNT","PASS","M022"],
-    ["Ad","Creative Format",el("creativeFormat").value,"BRIEF","PASS","R01"],
-    ["Ad","Destination Type",el("destinationType").value,"BRIEF","PASS","R34"],
-    ["Ad","CTA",el("cta").value,"BRIEF","PASS","R33"]
+    ["Campaign","Name",el("campaignName").value,"BRIEF",statusForCsvId("M001"),"M001"],
+    ["Campaign","Objective",el("objective").value,"BRIEF",statusForCsvId("M002"),"M002"],
+    ["Campaign","Buying Type",el("buyingType").value,"ACCOUNT",statusForCsvId("M002"),"M002"],
+    ["Campaign","Special Category",el("specialCategory").value,"ACCOUNT",statusForCsvId("M003"),"M003"],
+    ["Campaign","Budget Owner",el("budgetOwner").value,"DERIVED",statusForCsvId("M004"),"M004"],
+    ["Ad Set","Name",el("adsetName").value,"BRIEF","N/A","S01"],
+    ["Ad Set","Conversion Location",el("conversionLocation").value,"BRIEF",statusForCsvId("M008"),"M008"],
+    ["Ad Set","Pixel/Dataset",el("dataset").value,"ACCOUNT",statusForCsvId("M008"),"M008"],
+    ["Ad Set","Conversion Event",el("conversionEvent").value,"DERIVED",statusForCsvId("M009"),"M009"],
+    ["Ad","Name",el("adName").value,"BRIEF","N/A","R01"],
+    ["Ad","Facebook Page",el("facebookPage").value,"ACCOUNT",statusForCsvId("M022"),"M022"],
+    ["Ad","Creative Format",el("creativeFormat").value,"BRIEF",statusForCsvId("R01"),"R01"],
+    ["Ad","Destination Type",el("destinationType").value,"BRIEF",statusForCsvId("R34"),"R34"],
+    ["Ad","CTA",el("cta").value,"BRIEF",statusForCsvId("R33"),"R33"]
   ];
-  
+
   let csv = headers.join(",") + "\n";
   rows.forEach(row => {
-    csv += row.map(cell => `"${cell}"`).join(",") + "\n";
+    csv += row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(",") + "\n";
   });
-  
+
   const blob = new Blob([csv], {type: "text/csv"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -4005,6 +4239,286 @@ function resetAll(){
 }
 
 
+/* ===================== FORM STATE (shared by Undo/Redo + Draft autosave) =====================
+   A single, correct serialization used by both features, rather than two
+   independent implementations that would each have to reinvent this and
+   would drift out of sync. Captures everything the naive
+   "querySelectorAll('input,select,textarea') + el.id" approach misses:
+   radio groups (placementMode, frequencyMode, creativeSource have no id,
+   only name), the manual-placement checkboxes (no id, only value), and
+   multi-select languages (el.value only returns the first selection). */
+
+function getFormState(){
+
+  const fields={};
+
+  document.querySelectorAll("input[id],select[id],textarea[id]").forEach(elm=>{
+    if(elm.type==="checkbox"){
+      fields[elm.id]=elm.checked;
+    }else if(elm.tagName==="SELECT" && elm.multiple){
+      fields[elm.id]=[...elm.selectedOptions].map(o=>o.value);
+    }else{
+      fields[elm.id]=elm.value;
+    }
+  });
+
+  const radios={};
+  document.querySelectorAll('input[type="radio"][name]').forEach(r=>{
+    if(r.checked) radios[r.name]=r.value;
+  });
+
+  const placements=
+    [...document.querySelectorAll('#manualPlacements .placement-group-body input[type="checkbox"]:checked')]
+      .map(c=>c.value);
+
+  const audienceSource=
+    el("savedAudienceTab").classList.contains("active") ? "saved" : "new";
+
+  return {fields, radios, placements, audienceSource};
+
+}
+
+
+function restoreFormState(stateSnapshot){
+
+  if(!stateSnapshot) return;
+
+  Object.entries(stateSnapshot.fields||{}).forEach(([id,value])=>{
+
+    const target=el(id);
+    if(!target) return;
+
+    if(target.type==="checkbox"){
+      target.checked=!!value;
+    }else if(target.tagName==="SELECT" && target.multiple){
+      [...target.options].forEach(o=>{
+        o.selected=Array.isArray(value) && value.includes(o.value);
+      });
+    }else{
+      target.value=value;
+    }
+
+  });
+
+  Object.entries(stateSnapshot.radios||{}).forEach(([name,value])=>{
+    const radio=document.querySelector(
+      `input[type="radio"][name="${name}"][value="${CSS.escape(value)}"]`
+    );
+    if(radio) radio.checked=true;
+  });
+
+  document.querySelectorAll('#manualPlacements .placement-group-body input[type="checkbox"]').forEach(c=>{
+    c.checked=(stateSnapshot.placements||[]).includes(c.value);
+  });
+
+  setAudienceSourceTab(stateSnapshot.audienceSource==="saved" ? "saved" : "new");
+
+  // Dynamically-populated dropdowns (conversionLocation, performanceGoal,
+  // campaignBid, campaignBidStrategyType, cta) get their <option> lists
+  // rebuilt inside updateDependencies() based on objective/destination —
+  // populateSelect() preserves the value we just set above as long as it's
+  // a valid option in the rebuilt list, so one call here is enough.
+  updateDependencies();
+
+}
+
+
+/* ===================== UNDO / REDO ===================== */
+
+const history=[];
+let historyIndex=-1;
+let restoringHistory=false;
+
+function saveHistory(){
+
+  if(restoringHistory) return;
+
+  const snapshot=JSON.stringify(getFormState());
+
+  if(history.length && history[historyIndex]===snapshot) return;
+
+  if(historyIndex < history.length - 1){
+    history.splice(historyIndex + 1);
+  }
+
+  history.push(snapshot);
+  historyIndex++;
+
+  if(history.length > 50){
+    history.shift();
+    historyIndex--;
+  }
+
+  updateUndoRedoButtons();
+
+}
+
+function undo(){
+
+  if(historyIndex <= 0) return;
+
+  historyIndex--;
+  restoringHistory=true;
+  restoreFormState(JSON.parse(history[historyIndex]));
+  restoringHistory=false;
+
+  updateUndoRedoButtons();
+
+}
+
+function redo(){
+
+  if(historyIndex >= history.length - 1) return;
+
+  historyIndex++;
+  restoringHistory=true;
+  restoreFormState(JSON.parse(history[historyIndex]));
+  restoringHistory=false;
+
+  updateUndoRedoButtons();
+
+}
+
+function updateUndoRedoButtons(){
+  el("undoBtn").disabled = historyIndex <= 0;
+  el("redoBtn").disabled = historyIndex >= history.length - 1;
+}
+
+
+/* ===================== DRAFT AUTOSAVE (localStorage) =====================
+   Note: this uses window.localStorage, which only persists when the file
+   is opened directly in a browser (double-clicked, or hosted somewhere) —
+   it is not available inside Claude.ai's inline artifact preview sandbox.
+   Draft save/load will silently no-op there; open the downloaded file
+   directly in a browser for autosave to actually persist. */
+
+function saveToLocalStorage(manual){
+
+  try{
+    localStorage.setItem("metaValidatorState", JSON.stringify(getFormState()));
+    const stamp="Draft saved "+new Date().toLocaleTimeString();
+    el("autosaveStatus").textContent=stamp;
+    if(manual) alert("Draft saved!");
+  }catch(e){
+    el("autosaveStatus").textContent="Autosave unavailable in this environment.";
+    if(manual) alert("Couldn't save a draft here — try opening this file directly in a browser tab.");
+  }
+
+}
+
+function loadFromLocalStorage(manual){
+
+  try{
+
+    const saved=localStorage.getItem("metaValidatorState");
+
+    if(!saved){
+      if(manual) alert("No saved draft found.");
+      return;
+    }
+
+    if(manual && !confirm("Load the saved draft? This will overwrite the current form.")) return;
+
+    restoreFormState(JSON.parse(saved));
+    saveHistory();
+    el("autosaveStatus").textContent="Draft loaded.";
+
+  }catch(e){
+    if(manual) alert("Couldn't load a draft here — try opening this file directly in a browser tab.");
+  }
+
+}
+
+
+/* ===================== TEMPLATES ===================== */
+
+const templates={
+
+  "Traffic - Website":{
+    independent:{
+      objective:"Traffic", buyingType:"Auction", specialCategory:"None",
+      advantagePlusBudget:"No", budgetOwner:"Campaign", campaignBudgetType:"Daily",
+      currency:"USD", audienceType:"Broad", destinationType:"Website"
+    },
+    dependent:{
+      conversionLocation:"Website", cta:"Learn More"
+    }
+  },
+
+  "Sales - Advantage+ Shopping":{
+    independent:{
+      objective:"Sales", buyingType:"Auction", specialCategory:"None",
+      advantagePlusBudget:"Yes", budgetOwner:"Campaign", campaignBudgetType:"Daily",
+      currency:"USD", audienceType:"Advantage+ audience", destinationType:"Website"
+    },
+    dependent:{
+      conversionLocation:"Website", cta:"Shop Now"
+    }
+  },
+
+  "Leads - Instant Form":{
+    independent:{
+      objective:"Leads", buyingType:"Auction", specialCategory:"None",
+      advantagePlusBudget:"No", budgetOwner:"Campaign", campaignBudgetType:"Daily",
+      currency:"USD", audienceType:"Broad", destinationType:"Instant Form"
+    },
+    dependent:{
+      conversionLocation:"Instant Form", cta:"Sign Up"
+    }
+  },
+
+  "App Promotion - Installs":{
+    independent:{
+      objective:"App promotion", buyingType:"Auction", specialCategory:"None",
+      advantagePlusBudget:"No", budgetOwner:"Campaign", campaignBudgetType:"Daily",
+      currency:"USD", audienceType:"Advantage+ audience", destinationType:"App"
+    },
+    dependent:{
+      conversionLocation:"App", cta:"Install Now"
+    }
+  }
+
+};
+
+function populateTemplateSelect(){
+  const select=el("templateSelect");
+  Object.keys(templates).forEach(name=>{
+    const opt=document.createElement("option");
+    opt.value=name;
+    opt.textContent=name;
+    select.appendChild(opt);
+  });
+}
+
+function loadTemplate(name){
+
+  const t=templates[name];
+  if(!t) return;
+
+  // Two-pass apply: independent fields first (objective, destination
+  // type, etc.), then a single updateDependencies() to rebuild the
+  // dynamically-populated dropdowns those fields drive, THEN the
+  // dependent fields (conversion location, CTA) which only have valid
+  // options once that rebuild has happened.
+  Object.entries(t.independent||{}).forEach(([key,value])=>{
+    const target=el(key);
+    if(target) target.value=value;
+  });
+
+  updateDependencies();
+
+  Object.entries(t.dependent||{}).forEach(([key,value])=>{
+    const target=el(key);
+    if(target) target.value=value;
+  });
+
+  updateDependencies();
+
+  saveHistory();
+
+}
+
+
 function initialise(){
 
   const today=new Date();
@@ -4016,7 +4530,27 @@ function initialise(){
   el("startDate").value=
     `${yyyy}-${mm}-${dd}`;
 
+  populateTemplateSelect();
+
   updateDependencies();
+
+  // Seed history with the blank-slate state so the first real edit has
+  // something to undo back to, rather than undo being a no-op until the
+  // second change.
+  saveHistory();
+
+  // Don't auto-restore or auto-prompt on load (that's disruptive, and
+  // localStorage silently isn't available inside Claude.ai's artifact
+  // preview anyway) — just surface that a draft exists so "Load Draft"
+  // is a visible, informed choice rather than a guess.
+  try{
+    if(localStorage.getItem("metaValidatorState")){
+      el("autosaveStatus").textContent="A saved draft is available.";
+    }
+  }catch(e){
+    // localStorage not available in this environment — QA Controls
+    // buttons will explain this if the user tries Save/Load Draft.
+  }
 
 }
 
@@ -4032,8 +4566,72 @@ document.addEventListener(
   "change",
   ()=>{
     updateDependencies();
+    saveHistory();
   }
 );
+
+/* ===================== KEYBOARD SHORTCUTS =====================
+   Ctrl+1/2/3 was the original ask for jumping between tabs, but Chrome
+   and most Chromium browsers reserve Ctrl+1-8 for switching browser
+   tabs at the OS/chrome level — a page's preventDefault() cannot
+   override that, so those bindings would silently never fire. Using
+   Alt+1/2/3 instead, which pages CAN actually intercept. */
+
+document.addEventListener("keydown", (e) => {
+
+  if(e.ctrlKey || e.metaKey){
+
+    if(e.key==="s" || e.key==="S"){
+      e.preventDefault();
+      saveToLocalStorage(true);
+      return;
+    }
+
+    if(e.key==="Enter" && e.shiftKey){
+      e.preventDefault();
+      publishCheck();
+      return;
+    }
+
+    if(e.key==="z" || e.key==="Z"){
+      e.preventDefault();
+      if(e.shiftKey) redo(); else undo();
+      return;
+    }
+
+    if(e.key==="y" || e.key==="Y"){
+      e.preventDefault();
+      redo();
+      return;
+    }
+
+  }
+
+  if(e.altKey){
+
+    if(e.key==="1"){
+      e.preventDefault();
+      showTab("campaign", document.querySelectorAll(".step")[0]);
+      return;
+    }
+
+    if(e.key==="2"){
+      e.preventDefault();
+      showTab("adset", document.querySelectorAll(".step")[1]);
+      return;
+    }
+
+    if(e.key==="3"){
+      e.preventDefault();
+      showTab("ad", document.querySelectorAll(".step")[2]);
+      return;
+    }
+
+  }
+
+});
+
+setInterval(saveToLocalStorage, 30000);
 
 initialise();
 
